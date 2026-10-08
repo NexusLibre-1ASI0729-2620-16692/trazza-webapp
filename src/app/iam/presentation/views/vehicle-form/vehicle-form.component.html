@@ -5,28 +5,28 @@
   </div>
 
   <form class="trazza-panel form-container" [formGroup]="vehicleForm" (ngSubmit)="saveVehicle()">
-    
+
     <div class="grid-3">
       <div>
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>{{ 'fields.plate' | translate }} *</mat-label>
+          <mat-label>{{ 'fields.plate' | translate }}</mat-label>
           <input matInput formControlName="plate" placeholder="ABC-123" style="text-transform: uppercase;">
-          <mat-error *ngIf="vehicleForm.get('plate')?.hasError('required')">Required</mat-error>
-          <mat-error *ngIf="vehicleForm.get('plate')?.hasError('pattern')">Format: ABC-123</mat-error>
+          <mat-error *ngIf="vehicleForm.get('plate')?.hasError('required')">{{ 'validation.field-required' | translate }}</mat-error>
+          <mat-error *ngIf="vehicleForm.get('plate')?.hasError('pattern')">{{ 'validation.plate-invalid' | translate }}</mat-error>
         </mat-form-field>
       </div>
 
       <div>
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>{{ 'fields.brand-model' | translate }} *</mat-label>
+          <mat-label>{{ 'fields.brand-model' | translate }}</mat-label>
           <input matInput formControlName="brandModel" [placeholder]="'vehicle.brand-placeholder' | translate">
-          <mat-error *ngIf="vehicleForm.get('brandModel')?.hasError('required')">Required</mat-error>
+          <mat-error *ngIf="vehicleForm.get('brandModel')?.hasError('required')">{{ 'validation.field-required' | translate }}</mat-error>
         </mat-form-field>
       </div>
 
       <div>
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>{{ 'fields.body-type' | translate }} *</mat-label>
+          <mat-label>{{ 'fields.body-type' | translate }}</mat-label>
           <mat-select formControlName="bodyType">
             <mat-option *ngFor="let bt of bodyTypes" [value]="bt">
               {{ 'body-types.' + bt | translate }}
@@ -37,19 +37,19 @@
 
       <div>
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>{{ 'fields.capacity-kg' | translate }} *</mat-label>
+          <mat-label>{{ 'fields.capacity-kg' | translate }}</mat-label>
           <input matInput type="number" formControlName="capacityKg" placeholder="3500">
           <span matTextSuffix>kg</span>
-          <mat-error *ngIf="vehicleForm.get('capacityKg')?.hasError('required')">Required</mat-error>
+          <mat-error *ngIf="vehicleForm.get('capacityKg')?.hasError('required')">{{ 'validation.field-required' | translate }}</mat-error>
         </mat-form-field>
       </div>
 
       <div>
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>{{ 'fields.volume-m3' | translate }} *</mat-label>
+          <mat-label>{{ 'fields.volume-m3' | translate }}</mat-label>
           <input matInput type="number" formControlName="volumeM3" placeholder="18">
           <span matTextSuffix>m³</span>
-          <mat-error *ngIf="vehicleForm.get('volumeM3')?.hasError('required')">Required</mat-error>
+          <mat-error *ngIf="vehicleForm.get('volumeM3')?.hasError('required')">{{ 'validation.field-required' | translate }}</mat-error>
         </mat-form-field>
       </div>
 
