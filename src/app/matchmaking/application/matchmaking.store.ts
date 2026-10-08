@@ -186,7 +186,7 @@ export class MatchmakingStore {
         vehicleCapacityKg: vehicle.capacity.weightKg,
         vehicleCapacityM3: vehicle.capacity.volumeM3,
         carrierId: this.iamStore.currentUserId() ?? 0,
-        vehicleId: vehicle.id,
+        vehicleId: vehicle.id!,
         vehicleLabel: vehicle.label,
         origin: new Address(data.origin),
         destination: new Address(data.destination),

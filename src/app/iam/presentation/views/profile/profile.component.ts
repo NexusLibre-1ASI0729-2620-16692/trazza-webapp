@@ -6,11 +6,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
-import { TranslateModule } from '@ngx-translate/core';
-import { NgIf } from '@angular/common';
-import { IamStore } from '../../application/iam.store';
-import { ProfileStore } from '../../application/profile.store';
-import { initialsOf } from '../../../shared/presentation/formatters';
+import { TranslatePipe } from '@ngx-translate/core';
+import { NgIf, NgClass } from '@angular/common';
+import { IamStore } from '../../../application/iam.store';
+import { ProfileStore } from '../../../application/profile.store';
+import { initialsOf } from '../../../../shared/presentation/formatters';
 
 @Component({
   selector: 'app-profile',
@@ -23,8 +23,9 @@ import { initialsOf } from '../../../shared/presentation/formatters';
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
-    TranslateModule,
-    NgIf
+    TranslatePipe,
+    NgIf,
+    NgClass
   ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
@@ -81,7 +82,7 @@ export class ProfileComponent implements OnInit {
       
       this.profileForm.patchValue({
         fullName: user?.fullName ?? '',
-        phone: user?.phone.formatted ?? '',
+        phone: user?.phone.value ?? '',
         businessName: merchant?.businessName ?? ''
       }, { emitEvent: false });
       

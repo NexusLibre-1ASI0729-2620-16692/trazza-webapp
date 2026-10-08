@@ -6,23 +6,23 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { NgIf } from '@angular/common';
-import { IamStore } from '../../application/iam.store';
-import { SignInCommand } from '../../domain/commands/sign-in.command';
+import { IamStore } from '../../../application/iam.store';
+import { SignInCommand } from '../../../domain/commands/sign-in.command';
 
 @Component({
   selector: 'app-sign-in',
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    RouterLink,
+    
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    TranslateModule,
+    TranslatePipe,
     NgIf
   ],
   templateUrl: './sign-in.component.html',

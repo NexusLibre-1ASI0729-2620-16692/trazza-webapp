@@ -90,7 +90,7 @@ export class ReturnRouteForm extends BaseForm {
       const vehicles = this.vehicles();
       if (!this.form.controls.vehicleId.value && vehicles.length) {
         const vehicle = vehicles[0];
-        this.form.patchValue({ vehicleId: vehicle.id, availableWeightKg: vehicle.capacity.weightKg, availableVolumeM3: vehicle.capacity.volumeM3 });
+        this.form.patchValue({ vehicleId: vehicle.id!, availableWeightKg: vehicle.capacity.weightKg, availableVolumeM3: vehicle.capacity.volumeM3 });
       }
     });
   }

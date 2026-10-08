@@ -8,11 +8,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { NgIf, NgClass } from '@angular/common';
-import { IamStore } from '../../application/iam.store';
-import { ProfileStore } from '../../application/profile.store';
-import { SignUpCommand } from '../../domain/commands/sign-up.command';
+import { IamStore } from '../../../application/iam.store';
+import { ProfileStore } from '../../../application/profile.store';
+import { SignUpCommand } from '../../../domain/commands/sign-up.command';
 
 function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password');
@@ -36,7 +36,7 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
     MatIconModule,
     MatRadioModule,
     MatCheckboxModule,
-    TranslateModule,
+    TranslatePipe,
     NgIf,
     NgClass
   ],

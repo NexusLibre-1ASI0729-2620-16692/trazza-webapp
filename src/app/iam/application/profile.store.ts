@@ -52,6 +52,31 @@ export class ProfileStore {
     }
   }
 
+
+  carrierProfileOf(userId: number): CarrierProfile | undefined {
+    return this.getCarrierProfileByUserId(userId);
+  }
+
+  merchantProfileOf(userId: number): MerchantProfile | undefined {
+    return this.getMerchantProfileByUserId(userId);
+  }
+
+  loadProfiles(): Promise<void> {
+    return this.fetchProfiles();
+  }
+
+  get activeVehicles() {
+    return computed(() => {
+      const profile = this.currentCarrierProfile();
+      return profile ? profile.vehicles.filter(v => v.active) : [];
+    });
+  }
+
+  findVehicle(vehicleId: number): Vehicle | undefined {
+    const profile = this.currentCarrierProfile();
+    return profile?.findVehicle(vehicleId);
+  }
+
   getCarrierProfileByUserId(userId: number): CarrierProfile | undefined {
     return this._carrierProfiles().find(p => p.userId === userId);
   }

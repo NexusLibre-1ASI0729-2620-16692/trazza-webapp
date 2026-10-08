@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { NgIf, NgFor } from '@angular/common';
 import { ProfileStore } from '../../../application/profile.store';
 import { VehicleCardComponent } from '../../components/vehicle-card/vehicle-card.component';
@@ -11,7 +11,7 @@ import { Vehicle } from '../../../domain/model/vehicle.entity';
 @Component({
   selector: 'app-vehicle-list',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, TranslateModule, NgIf, NgFor, VehicleCardComponent],
+  imports: [MatButtonModule, MatIconModule, TranslatePipe, NgIf, NgFor, VehicleCardComponent],
   templateUrl: './vehicle-list.component.html',
   styleUrls: ['./vehicle-list.component.css']
 })

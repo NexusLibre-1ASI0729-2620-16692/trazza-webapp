@@ -53,7 +53,7 @@ export class ActiveTrip implements OnInit {
       return;
     }
 
-    this.executionStore.confirmPickup(shipment).subscribe();
+    this.executionStore.confirmPickup(shipment).then();
   }
 
   confirmDelivery(): void {
@@ -64,7 +64,7 @@ export class ActiveTrip implements OnInit {
     }
 
     try {
-      this.executionStore.confirmDelivery(shipment).subscribe();
+      this.executionStore.confirmDelivery(shipment).then();
     } catch (error) {
       console.error('Unable to confirm delivery', error);
     }

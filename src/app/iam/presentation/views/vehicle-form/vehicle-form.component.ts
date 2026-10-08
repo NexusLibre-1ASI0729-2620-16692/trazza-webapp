@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { NgIf, NgFor } from '@angular/common';
 import { ProfileStore } from '../../../application/profile.store';
 import { Vehicle } from '../../../domain/model/vehicle.entity';
@@ -23,7 +23,7 @@ import { Vehicle } from '../../../domain/model/vehicle.entity';
     MatIconModule,
     MatSelectModule,
     MatSlideToggleModule,
-    TranslateModule,
+    TranslatePipe,
     NgIf,
     NgFor
   ],

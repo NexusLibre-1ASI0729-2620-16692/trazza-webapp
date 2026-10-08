@@ -37,6 +37,7 @@ export class User {
 
   get id(): number | null { return this._id; }
   get fullName(): string { return this._fullName; }
+  get firstName(): string { return this._fullName.split(' ')[0]; }
   get email(): Email { return this._email; }
   get phone(): Phone { return this._phone; }
   get role(): UserRole { return this._role; }

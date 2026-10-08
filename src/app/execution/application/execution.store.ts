@@ -174,12 +174,12 @@ export class ExecutionStore {
    */
   async confirmPickup(shipment: Shipment): Promise<void> {
     if (!shipment.status.isActive) {
-      this.notificationStore.showError('El envío no se encuentra activo.');
+      // this.notificationStore.showError('El envío no se encuentra activo.');
       return;
     }
 
     shipment.confirmPickup();
-    await this.persistShipment(shipment);
+    await this.persistShipment(shipment, '', '');
   }
 
   /**
@@ -191,7 +191,7 @@ export class ExecutionStore {
   ): Observable<Shipment> {
 
     if (!shipment.status.isActive) {
-      this.notificationStore.showError('El envío no se encuentra activo.');
+      // this.notificationStore.showError('El envío no se encuentra activo.');
       throw new Error('execution.shipment-not-active');
     }
 
@@ -233,12 +233,12 @@ export class ExecutionStore {
     acknowledgeDistance = false
   ): Promise<void> {
     if (!shipment.status.isActive) {
-      this.notificationStore.showError('El envío no se encuentra activo.');
+      // this.notificationStore.showError('El envío no se encuentra activo.');
       return;
     }
 
     shipment.confirmDelivery(acknowledgeDistance);
-    await this.persistShipment(shipment);
+    await this.persistShipment(shipment, '', '');
   }
 
   /**
@@ -246,7 +246,7 @@ export class ExecutionStore {
    */
   confirmReception(shipment: Shipment): Observable<Shipment> {
     if (!shipment.status.isActive) {
-      this.notificationStore.showError('El envío no se encuentra activo.');
+      // this.notificationStore.showError('El envío no se encuentra activo.');
       throw new Error('execution.shipment-not-active');
     }
 
