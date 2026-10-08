@@ -4,24 +4,24 @@
     <p class="trazza-muted mt-1 mb-4">{{ 'sign-in.subtitle' | translate }}</p>
 
     <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="flex flex-column gap-3">
-      
+
       <div>
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>{{ 'fields.email' | translate }} *</mat-label>
+          <mat-label>{{ 'fields.email' | translate }}</mat-label>
           <input matInput type="email" formControlName="email" placeholder="name@email.com" autocomplete="username">
-          <mat-error *ngIf="signInForm.controls['email'].hasError('required')">Email is required</mat-error>
-          <mat-error *ngIf="signInForm.controls['email'].hasError('email')">Invalid email format</mat-error>
+          <mat-error *ngIf="signInForm.controls['email'].hasError('required')">{{ 'validation.field-required' | translate }}</mat-error>
+          <mat-error *ngIf="signInForm.controls['email'].hasError('email')">{{ 'validation.email-invalid' | translate }}</mat-error>
         </mat-form-field>
       </div>
 
       <div>
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>{{ 'fields.password' | translate }} *</mat-label>
+          <mat-label>{{ 'fields.password' | translate }}</mat-label>
           <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password" autocomplete="current-password">
           <button mat-icon-button matSuffix (click)="togglePasswordVisibility($event)" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword()" type="button">
             <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
           </button>
-          <mat-error *ngIf="signInForm.controls['password'].hasError('required')">Password is required</mat-error>
+          <mat-error *ngIf="signInForm.controls['password'].hasError('required')">{{ 'validation.password-required' | translate }}</mat-error>
         </mat-form-field>
       </div>
 
@@ -41,7 +41,7 @@
       <!-- <a routerLink="/iam/sign-up" [queryParams]="{role: 'carrier'}" class="text-primary font-semibold">{{ 'sign-in.as-carrier' | translate }}</a> ·
       <a routerLink="/iam/sign-up" [queryParams]="{role: 'merchant'}" class="text-primary font-semibold">{{ 'sign-in.as-merchant' | translate }}</a> -->
     </p>
-    
+
     <div class="divider-row"></div>
     <p class="text-xs trazza-muted m-0 text-center">{{ 'sign-in.demo-hint' | translate }}</p>
 
