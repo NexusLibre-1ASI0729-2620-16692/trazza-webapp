@@ -11,17 +11,17 @@
         <div class="profile-avatar">{{ initialsOf(iamStore.currentUser()?.fullName) }}</div>
         <div class="font-bold text-lg">{{ displayName() }}</div>
         <div class="trazza-muted text-sm">{{ iamStore.currentUser()?.email?.value }}</div>
-        
+
         <mat-chip-set class="mt-2">
-          <mat-chip [style.background-color]="verified() ? '#e6f4ea' : '#fef7e0'" 
+          <mat-chip [style.background-color]="verified() ? '#e6f4ea' : '#fef7e0'"
                     [style.color]="verified() ? '#137333' : '#b06000'">
             <mat-icon matChipAvatar>{{ verified() ? 'verified' : 'schedule' }}</mat-icon>
             {{ (verified() ? 'profile.verified' : 'profile.pending-verification') | translate }}
           </mat-chip>
         </mat-chip-set>
-        
+
         <div class="divider-row w-full mt-3 mb-3"></div>
-        
+
         <!-- Reputation placeholders (Wait for Reputation Bounded Context) -->
         <div class="flex justify-content-around w-full">
           <div>
@@ -40,29 +40,29 @@
     <div class="col-12 lg-col-8">
       <form class="trazza-panel" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
         <div class="grid-2">
-          
+
           <div [ngClass]="{'span-2': isCarrier()}">
             <mat-form-field appearance="outline" class="w-full">
-              <mat-label>{{ (isCarrier() ? 'fields.full-name' : 'fields.contact-name') | translate }} *</mat-label>
+              <mat-label>{{ (isCarrier() ? 'fields.full-name' : 'fields.contact-name') | translate }}</mat-label>
               <input matInput formControlName="fullName">
-              <mat-error *ngIf="profileForm.get('fullName')?.hasError('required')">Name is required</mat-error>
+              <mat-error *ngIf="profileForm.get('fullName')?.hasError('required')">{{ 'validation.full-name-required' | translate }}</mat-error>
             </mat-form-field>
           </div>
 
           <div *ngIf="!isCarrier()">
             <mat-form-field appearance="outline" class="w-full">
-              <mat-label>{{ 'fields.business-name' | translate }} *</mat-label>
+              <mat-label>{{ 'fields.business-name' | translate }}</mat-label>
               <input matInput formControlName="businessName">
-              <mat-error *ngIf="profileForm.get('businessName')?.hasError('required')">Business Name is required</mat-error>
+              <mat-error *ngIf="profileForm.get('businessName')?.hasError('required')">{{ 'validation.business-name-required' | translate }}</mat-error>
             </mat-form-field>
           </div>
 
           <div>
             <mat-form-field appearance="outline" class="w-full">
-              <mat-label>{{ 'fields.phone' | translate }} *</mat-label>
+              <mat-label>{{ 'fields.phone' | translate }}</mat-label>
               <input matInput formControlName="phone">
-              <mat-error *ngIf="profileForm.get('phone')?.hasError('required')">Phone is required</mat-error>
-              <mat-error *ngIf="profileForm.get('phone')?.hasError('pattern')">Format: 9 digits</mat-error>
+              <mat-error *ngIf="profileForm.get('phone')?.hasError('required')">{{ 'validation.field-required' | translate }}</mat-error>
+              <mat-error *ngIf="profileForm.get('phone')?.hasError('pattern')">{{ 'validation.phone-invalid' | translate }}</mat-error>
             </mat-form-field>
           </div>
 
@@ -85,7 +85,7 @@
         <div *ngIf="errorMessage()" class="error-message mt-2">
           {{ errorMessage() }}
         </div>
-        
+
         <div *ngIf="successMessage()" class="success-message mt-2">
           {{ successMessage() | translate }}
         </div>
