@@ -26,9 +26,19 @@ export const formatDate = (value: string | null | undefined, language?: string |
   return date.toLocaleDateString(localeOf(language), { day: '2-digit', month: 'short', year: 'numeric' });
 };
 
+export const formatDateTime = (value: string | null | undefined, language?: string | null): string => {
+  if (!value) return '—';
+  return new Date(value).toLocaleString(localeOf(language), { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+};
+
 export const formatTime = (value: string | null | undefined, language?: string | null): string => {
   if (!value) return '—';
   return new Date(value).toLocaleTimeString(localeOf(language), { hour: '2-digit', minute: '2-digit' });
+};
+
+export const formatMoney = (amount: number | null | undefined, currency: string | null | undefined = 'PEN'): string => {
+  const symbol = currency === 'USD' ? 'US$' : 'S/';
+  return `${symbol} ${Number(amount ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
 export const formatNumber = (value: number | null | undefined): string =>
