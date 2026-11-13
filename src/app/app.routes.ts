@@ -14,7 +14,7 @@ export const routes: Routes = [
   { path: 'iam',         loadChildren:  iamRoutes },
   { path: 'matchmaking', loadChildren:  matchmakingRoutes },
   { path: 'execution',   loadChildren:  executionRoutes },
-  { path: 'billing',     loadChildren:  billingRoutes },
+  { path: 'billing',     loadChildren:  billingRoutes, canActivateChild: [iamGuard] },
   { path: 'reputation',  loadChildren:  reputationRoutes },
   { path: '',            redirectTo:    '/dashboard', pathMatch: 'full' },
   { path: '**',          loadComponent: pageNotFound,      title: 'page-not-found.title' }
