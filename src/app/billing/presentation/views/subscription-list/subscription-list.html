@@ -1,0 +1,57 @@
+<section class="trazza-page">
+  <header class="trazza-page-header">
+    <div>
+      <h1>{{ 'subscription.title' | translate }}</h1>
+      <p>{{ 'subscription.subtitle' | translate }}</p>
+    </div>
+  </header>
+  @for (subscription of store.subscriptions(); track subscription.id) {
+    <article class="trazza-panel stack mb-3">
+      <div class="row-between wrap">
+        <h2 class="text-lg m-0">{{ subscription.plan.name }}</h2>
+        <app-status-tag [status]="subscription.status"/>
+      </div>
+      <div class="text-sm">{{ 'subscription.period' | translate }}: {{ subscription.currentPeriodStart | trazzaDate: locale.language() }} – {{ subscription.currentPeriodEnd | trazzaDate: locale.language() }}</div>
+      <div class="text-sm">{{ 'plan.monthly-total' | translate }}: <b>{{ subscription.monthlyAmount | trazzaMoney: subscription.plan.currency }}</b></div>
+      <div class="row wrap">
+        @for (vehicle of subscription.vehicles; track vehicle.id) {
+          <app-status-tag tone="secondary" [labelKey]="vehicle.plate"/>
+        }
+      </div>
+      @if (subscription.payments.length) {
+        <div class="table-panel">
+          <table mat-table [dataSource]="subscription.payments">
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef>{{ 'columns.date' | translate }}</th>
+              <td mat-cell *matCellDef="let payment">{{ payment.paidAt | trazzaDate: locale.language() }}</td>
+            </ng-container>
+            <ng-container matColumnDef="amount">
+              <th mat-header-cell *matHeaderCellDef>{{ 'columns.amount' | translate }}</th>
+              <td mat-cell *matCellDef="let payment">{{ payment.amount | trazzaMoney: payment.currency }}</td>
+            </ng-container>
+            <ng-container matColumnDef="operation">
+              <th mat-header-cell *matHeaderCellDef>{{ 'subscription.operation' | translate }}</th>
+              <td mat-cell *matCellDef="let payment" class="text-sm">{{ payment.gatewayPaymentId ?? '—' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>{{ 'columns.status' | translate }}</th>
+              <td mat-cell *matCellDef="let payment"><app-status-tag [status]="payment.status"/></td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="paymentColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: paymentColumns"></tr>
+          </table>
+        </div>
+      }
+      @if (!subscription.isCancelled) {
+        <div class="form-actions">
+          <button mat-button type="button" class="danger-text" (click)="cancel(subscription)">{{ 'subscription.cancel' | translate }}</button>
+          <button mat-stroked-button type="button" (click)="renew(subscription)"><mat-icon>autorenew</mat-icon>{{ 'subscription.renew' | translate }}</button>
+        </div>
+      }
+    </article>
+  } @empty {
+    <app-empty-state icon="event_repeat" titleKey="subscription.empty">
+      <a mat-stroked-button routerLink="/billing/plans">{{ 'option.plans' | translate }}</a>
+    </app-empty-state>
+  }
+</section>
