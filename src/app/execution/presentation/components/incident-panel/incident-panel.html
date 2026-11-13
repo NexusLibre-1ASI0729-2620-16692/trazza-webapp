@@ -1,0 +1,61 @@
+<article class="trazza-panel stack">
+  <div class="row-between">
+    <h2 class="text-lg m-0">{{ 'incident.title' | translate }}</h2>
+    @if (canReport()) {
+      <button mat-stroked-button type="button" (click)="reporting.set(!reporting())"><mat-icon>flag</mat-icon>{{ 'incident.report' | translate }}</button>
+    }
+  </div>
+  @if (reporting()) {
+    <form class="incident-card stack" [formGroup]="reportForm" (ngSubmit)="report()">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>{{ 'fields.type' | translate }}</mat-label>
+        <mat-select formControlName="type">
+          @for (type of types; track type) {
+            <mat-option [value]="type">{{ 'incident.types.' + typeKey(type) | translate }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>{{ 'fields.description' | translate }}</mat-label>
+        <textarea matInput rows="3" maxlength="1000" formControlName="description"></textarea>
+      </mat-form-field>
+      <div class="form-actions">
+        <button mat-button type="button" (click)="reporting.set(false)">{{ 'actions.cancel' | translate }}</button>
+        <button mat-flat-button type="submit" class="danger-button">{{ 'incident.report' | translate }}</button>
+      </div>
+    </form>
+  }
+  @for (incident of incidents(); track incident.id) {
+    <div class="incident-card stack">
+      <div class="row-between">
+        <span class="semibold">{{ 'incident.types.' + typeKey(incident.type) | translate }}</span>
+        <app-status-tag [status]="incident.status"/>
+      </div>
+      <div class="text-sm">{{ incident.description }}</div>
+      <div class="text-xs trazza-muted">{{ incident.reportedAt | trazzaDateTime: locale.language() }}</div>
+      @for (evidence of incident.evidences; track evidence.id) {
+        <div class="text-xs row"><mat-icon class="small-icon" aria-hidden="true">attach_file</mat-icon>{{ evidence.s3Key }}</div>
+      }
+      @if (incident.isResolved) {
+        <div class="text-sm"><span class="semibold">{{ 'incident.resolution' | translate }}:</span> {{ incident.resolution }}</div>
+      } @else {
+        <div class="row">
+          <mat-form-field appearance="outline" class="grow" subscriptSizing="dynamic">
+            <mat-label>{{ 'incident.evidence-placeholder' | translate }}</mat-label>
+            <input matInput [(ngModel)]="evidenceKeys[incident.id]" [ngModelOptions]="{ standalone: true }">
+          </mat-form-field>
+          <button mat-icon-button type="button" [attr.aria-label]="'incident.add-evidence' | translate" (click)="addEvidence(incident)"><mat-icon>attach_file</mat-icon></button>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="outline" class="grow" subscriptSizing="dynamic">
+            <mat-label>{{ 'incident.resolution-placeholder' | translate }}</mat-label>
+            <input matInput [(ngModel)]="resolutions[incident.id]" [ngModelOptions]="{ standalone: true }">
+          </mat-form-field>
+          <button mat-icon-button type="button" [attr.aria-label]="'incident.resolve' | translate" (click)="resolve(incident)"><mat-icon>check</mat-icon></button>
+        </div>
+      }
+    </div>
+  } @empty {
+    <p class="text-sm trazza-muted m-0">{{ 'incident.empty' | translate }}</p>
+  }
+</article>

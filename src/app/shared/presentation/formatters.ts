@@ -59,6 +59,9 @@ export const initialsOf = (name: string | null | undefined): string => (name ?? 
   .map(part => part[0].toUpperCase())
   .join('');
 
+/** IN_TRANSIT becomes in-transit, the suffix of the statuses.* translation keys. */
+export const statusKey = (status: string | null | undefined): string => (status ?? '').toLowerCase().replaceAll('_', '-');
+
 export const statusSeverity = (status: string): Severity => STATUS_SEVERITIES[status] ?? 'secondary';
 
 export const halfHourSlots = (fromHour = 6, toHour = 22): string[] => {
