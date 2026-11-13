@@ -1,353 +1,96 @@
-import {computed, Injectable, signal} from '@angular/core';
-import {Observable, tap} from 'rxjs';
+import {computed, inject, Injectable, signal} from '@angular/core';
+import {firstValueFrom} from 'rxjs';
+import {ExecutionApi, TrackingResult, TripAction} from '../infrastructure/execution-api';
+import {Trip} from '../domain/model/trip.entity';
+import {TrackingPoint} from '../domain/model/tracking-point.entity';
+import {DeviationAlert} from '../domain/model/deviation-alert.entity';
+import {Evidence, Incident} from '../domain/model/incident.entity';
+import {IotDevice} from '../domain/model/iot-device.entity';
+import {TripStatusChange} from '../domain/model/trip-status-change.entity';
+import {ReportIncidentCommand} from '../domain/commands/report-incident.command';
+import {upsertById} from '../../shared/application/collections';
 
-import {
-  OpenShipmentData,
-  Shipment
-} from '../domain/model/shipment.entity';
-
-import {
-  Incident,
-  IncidentParams
-} from '../domain/model/incident.entity';
-
-import {IncidentType} from '../domain/model/incident-type.value-object';
-
-import {GeoLocation} from '../../shared/domain/model/geo-location.value-object';
-
-import {ExecutionApi} from '../infrastructure/execution-api';
-import {NotificationStore} from '../../shared/application/notification.store';
-import {IamStore} from '../../iam/application/iam.store';
-
-@Injectable({
-  providedIn: 'root'
-})
+/** Trips, their GPS tracking, deviation alerts and incidents, plus the carrier's loaned IoT devices. */
+@Injectable({providedIn: 'root'})
 export class ExecutionStore {
+  private readonly api = inject(ExecutionApi);
 
-  private readonly shipmentsSignal = signal<Shipment[]>([]);
-  private readonly loadingSignal = signal(false);
-  private readonly errorSignal = signal<string | null>(null);
+  private readonly tripsSignal = signal<Trip[]>([]);
+  private readonly iotDevicesSignal = signal<IotDevice[]>([]);
   private readonly loadedSignal = signal(false);
 
-  readonly shipments = this.shipmentsSignal.asReadonly();
-  readonly loading = this.loadingSignal.asReadonly();
-  readonly error = this.errorSignal.asReadonly();
+  readonly trips = this.tripsSignal.asReadonly();
+  readonly iotDevices = this.iotDevicesSignal.asReadonly();
   readonly loaded = this.loadedSignal.asReadonly();
+  readonly activeTrips = computed(() => this.trips().filter(trip => trip.isActive));
+  readonly openAlerts = computed(() => this.trips().reduce((total, trip) => total + (trip.openAlerts ?? 0), 0));
 
-  readonly myShipments = computed(() => {
-    const userId = this.iamStore.currentUserId();
-
-    if (userId === null) {
-      return [];
-    }
-
-    if (this.iamStore.isCarrier()) {
-      return this.shipments().filter(
-        shipment => shipment.carrierId === userId
-      );
-    }
-
-    if (this.iamStore.isMerchant()) {
-      return this.shipments().filter(
-        shipment => shipment.merchantId === userId
-      );
-    }
-
-    return [];
-  });
-
-  readonly myActiveShipments = computed(() =>
-    this.myShipments().filter(shipment => shipment.status.isActive)
-  );
-
-  readonly myFinishedShipments = computed(() =>
-    this.myShipments().filter(shipment =>
-      shipment.status.isDelivered ||
-      shipment.status.isCancelled
-    )
-  );
-
-  /**
-   * Shipments actualmente activos.
-   */
-  readonly activeShipments = computed(() =>
-    this.shipments().filter(shipment => shipment.status.isActive)
-  );
-
-  /**
-   * Shipments que ya terminaron su ciclo.
-   */
-  readonly finishedShipments = computed(() =>
-    this.shipments().filter(shipment =>
-      shipment.status.isDelivered ||
-      shipment.status.value === 'cancelled'
-    )
-  );
-
-  constructor(
-    private readonly executionApi: ExecutionApi,
-    private readonly notificationStore: NotificationStore,
-    private readonly iamStore: IamStore
-  ) {}
-
-  /**
-   * Carga todos los shipments desde la API.
-   */
-  loadShipments(): void {
-    if (this.loaded() || this.loading()) {
-      return;
-    }
-
-    this.fetchShipments().subscribe();
+  async loadTrips(): Promise<void> {
+    this.tripsSignal.set(await firstValueFrom(this.api.listTrips()));
+    this.loadedSignal.set(true);
   }
 
-  /**
-   * Fuerza la carga de shipments.
-   */
-  fetchShipments(): Observable<Shipment[]> {
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
-
-    return this.executionApi.getShipments().pipe(
-      tap({
-        next: shipments => {
-          this.shipmentsSignal.set(shipments);
-          this.loadedSignal.set(true);
-          this.loadingSignal.set(false);
-        },
-        error: error => {
-          console.error('ExecutionStore: error loading shipments', error);
-
-          this.errorSignal.set(
-            'No se pudieron cargar los envíos.'
-          );
-
-          this.loadedSignal.set(false);
-          this.loadingSignal.set(false);
-        }
-      })
-    );
+  async getTrip(id: string): Promise<Trip> {
+    return this.keep(await firstValueFrom(this.api.getTrip(id)));
   }
 
-  /**
-   * Busca un shipment por ID.
-   */
-  getShipmentById(id: number): Shipment | undefined {
-    return this.shipments().find(shipment => shipment.id === id);
+  getHistory(id: string): Promise<TripStatusChange[]> {
+    return firstValueFrom(this.api.getHistory(id));
   }
 
-  /**
-   * Obtiene un shipment directamente desde la API.
-   */
-  fetchShipmentById(id: number): Observable<Shipment> {
-    return this.executionApi.getShipmentById(id).pipe(
-      tap(shipment => {
-        this.upsertShipment(shipment);
-      })
-    );
+  async assignDriver(trip: Trip, driverId: number | null): Promise<Trip> {
+    return this.keep(await firstValueFrom(this.api.assignDriver(trip.id, driverId)));
   }
 
-  /**
-   * Abre un nuevo shipment después de una confirmación de match.
-   */
-  openShipment(data: OpenShipmentData): Observable<Shipment> {
-    const shipment = Shipment.open(data);
-
-    return this.executionApi.createShipment(shipment).pipe(
-      tap(createdShipment => {
-        this.upsertShipment(createdShipment);
-
-        this.notificationStore.notify({
-          severity: 'success',
-          summaryKey: 'shipment.notification.created.summary',
-          detailKey: 'shipment.notification.created.detail',
-          params: {
-            shipment: createdShipment.code
-          }
-        });
-      })
-    );
+  async runAction(trip: Trip, action: TripAction): Promise<Trip> {
+    return this.keep(await firstValueFrom(this.api.runAction(trip.id, action)));
   }
 
-  /**
-   * Confirma que el carrier recogió la carga.
-   */
-  async confirmPickup(shipment: Shipment): Promise<void> {
-    if (!shipment.status.isActive) {
-      // this.notificationStore.showError('El envío no se encuentra activo.');
-      return;
-    }
-
-    shipment.confirmPickup();
-    await this.persistShipment(shipment, '', '');
+  async cancelTrip(trip: Trip, reason: string): Promise<Trip> {
+    if (!reason.trim()) throw new Error('validation.reason-required');
+    return this.keep(await firstValueFrom(this.api.cancel(trip.id, reason.trim())));
   }
 
-  /**
-   * Actualiza la ubicación actual del shipment.
-   */
-  shareLocation(
-    shipment: Shipment,
-    location?: GeoLocation
-  ): Observable<Shipment> {
-
-    if (!shipment.status.isActive) {
-      // this.notificationStore.showError('El envío no se encuentra activo.');
-      throw new Error('execution.shipment-not-active');
-    }
-
-    const newLocation = location ?? shipment.currentLocation;
-
-    if (!newLocation) {
-      throw new Error('execution.location-required');
-    }
-
-    shipment.updateLocation(newLocation);
-
-    const updatedShipment = this.persistShipment(
-      shipment,
-      'shipment.notification.location.summary',
-      'shipment.notification.location.detail',
-      false
-    );
-
-    if (shipment.isOffRoute) {
-      this.notificationStore.notify({
-        severity: 'warn',
-        summaryKey: 'shipment.notification.deviation.summary',
-        detailKey: 'shipment.notification.deviation.detail',
-        params: {
-          shipment: shipment.code,
-          distance: Math.round(shipment.deviationKm * 100) / 100
-        }
-      });
-    }
-
-    return updatedShipment;
+  listTrackingPoints(tripId: string): Promise<TrackingPoint[]> {
+    return firstValueFrom(this.api.listTrackingPoints(tripId));
   }
 
-  /**
-   * Confirma la entrega.
-   */
-  async confirmDelivery(
-    shipment: Shipment,
-    acknowledgeDistance = false
-  ): Promise<void> {
-    if (!shipment.status.isActive) {
-      // this.notificationStore.showError('El envío no se encuentra activo.');
-      return;
-    }
-
-    shipment.confirmDelivery(acknowledgeDistance);
-    await this.persistShipment(shipment, '', '');
+  recordTrackingPoint(tripId: string, point: { latitude: number; longitude: number; speedKmh: number | null }): Promise<TrackingResult> {
+    return firstValueFrom(this.api.recordTrackingPoint(tripId, point));
   }
 
-  /**
-   * Confirma que el merchant recibió la carga.
-   */
-  confirmReception(shipment: Shipment): Observable<Shipment> {
-    if (!shipment.status.isActive) {
-      // this.notificationStore.showError('El envío no se encuentra activo.');
-      throw new Error('execution.shipment-not-active');
-    }
-
-    shipment.confirmReception();
-
-    return this.persistShipment(
-      shipment,
-      'shipment.notification.reception.summary',
-      'shipment.notification.reception.detail'
-    );
+  listAlerts(tripId: string): Promise<DeviationAlert[]> {
+    return firstValueFrom(this.api.listAlerts(tripId));
   }
 
-  /**
-   * Cancela un shipment.
-   */
-  cancelShipment(shipment: Shipment): Observable<Shipment> {
-    shipment.cancel();
-
-    return this.persistShipment(
-      shipment,
-      'shipment.notification.cancelled.summary',
-      'shipment.notification.cancelled.detail'
-    );
+  async acknowledgeAlert(tripId: string, alertId: number): Promise<void> {
+    await firstValueFrom(this.api.acknowledgeAlert(tripId, alertId));
   }
 
-  /**
-   * Reporta una incidencia asociada al shipment.
-   */
-  reportIncident(
-    shipment: Shipment,
-    data: {
-      type: string;
-      description: string;
-      reporterId: number;
-      reporterRole: 'carrier' | 'merchant';
-    }
-  ): Observable<Shipment> {
-
-    const incidentParams: IncidentParams = {
-      type: new IncidentType(data.type),
-      description: data.description,
-      reporterId: data.reporterId,
-      reporterRole: data.reporterRole
-    };
-
-    const incident = new Incident(incidentParams);
-
-    shipment.reportIncident(incident);
-
-    return this.persistShipment(
-      shipment,
-      'incident.notification.created.summary',
-      'incident.notification.created.detail'
-    );
+  listIncidents(tripId: string): Promise<Incident[]> {
+    return firstValueFrom(this.api.listIncidents(tripId));
   }
 
-  /**
-   * Persiste un shipment y actualiza el store.
-   */
-  private persistShipment(
-    shipment: Shipment,
-    summaryKey: string,
-    detailKey: string,
-    notify = true
-  ): Observable<Shipment> {
-
-    return this.executionApi.updateShipment(shipment).pipe(
-      tap(updatedShipment => {
-
-        this.upsertShipment(updatedShipment);
-
-        if (notify) {
-          this.notificationStore.notify({
-            severity: 'success',
-            summaryKey,
-            detailKey,
-            params: {
-              shipment: updatedShipment.code
-            }
-          });
-        }
-      })
-    );
+  reportIncident(tripId: string, command: ReportIncidentCommand): Promise<Incident> {
+    return firstValueFrom(this.api.reportIncident(tripId, command));
   }
 
-  /**
-   * Inserta o reemplaza un shipment dentro del store.
-   */
-  private upsertShipment(shipment: Shipment): void {
-    this.shipmentsSignal.update(shipments => {
-      const exists = shipments.some(
-        current => current.id === shipment.id
-      );
+  addEvidence(tripId: string, incidentId: number, s3Key: string): Promise<Evidence> {
+    if (!(s3Key ?? '').trim()) throw new Error('validation.evidence-required');
+    return firstValueFrom(this.api.addEvidence(tripId, incidentId, s3Key.trim()));
+  }
 
-      if (!exists) {
-        return [...shipments, shipment];
-      }
+  resolveIncident(tripId: string, incidentId: number, resolution: string): Promise<Incident> {
+    if (!(resolution ?? '').trim()) throw new Error('validation.resolution-required');
+    return firstValueFrom(this.api.resolveIncident(tripId, incidentId, resolution.trim()));
+  }
 
-      return shipments.map(current =>
-        current.id === shipment.id ? shipment : current
-      );
-    });
+  async loadIotDevices(): Promise<void> {
+    this.iotDevicesSignal.set(await firstValueFrom(this.api.listIotDevices()));
+  }
+
+  private keep(trip: Trip): Trip {
+    this.tripsSignal.update(trips => trips.some(item => item.id === trip.id) ? upsertById(trips, trip) : [trip, ...trips]);
+    return trip;
   }
 }
