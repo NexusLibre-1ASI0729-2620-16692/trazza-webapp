@@ -1,0 +1,25 @@
+<article class="trazza-panel chat">
+  <h2 class="text-lg mt-0 mb-1">{{ 'chat.title' | translate }}</h2>
+  <small class="trazza-muted text-sm">{{ 'chat.retention-hint' | translate }}</small>
+  <div #list class="chat-list" aria-live="polite">
+    @for (message of messages(); track message.id) {
+      <div class="chat-bubble" [class.mine]="message.isMine">
+        <div class="text-xs trazza-muted">{{ message.isMine ? ('chat.me' | translate) : message.senderName }} · {{ message.sentAt | trazzaDateTime: locale.language() }}</div>
+        <div class="chat-text">{{ message.content }}</div>
+      </div>
+    } @empty {
+      <p class="trazza-muted text-sm m-0">{{ 'chat.empty' | translate }}</p>
+    }
+  </div>
+  @if (open()) {
+    <form class="row chat-form" (ngSubmit)="send()">
+      <mat-form-field appearance="outline" class="chat-input" subscriptSizing="dynamic">
+        <mat-label>{{ 'chat.placeholder' | translate }}</mat-label>
+        <input matInput name="draft" [(ngModel)]="draft" maxlength="2000" autocomplete="off">
+      </mat-form-field>
+      <button mat-icon-button type="submit" [attr.aria-label]="'chat.send' | translate"><mat-icon>send</mat-icon></button>
+    </form>
+  } @else {
+    <small class="trazza-muted text-sm">{{ 'chat.closed' | translate }}</small>
+  }
+</article>

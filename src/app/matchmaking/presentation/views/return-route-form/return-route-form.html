@@ -5,101 +5,55 @@
       <p>{{ 'return-route.new-subtitle' | translate }}</p>
     </div>
   </header>
-  @if (!vehicles().length) {
-    <p class="trazza-message tag-warn mb-3" role="status">
+  @if (fleet.loaded() && !fleet.activeVehicles().length) {
+    <div class="trazza-message mb-3" role="alert">
       {{ 'return-route.no-vehicles' | translate }}
-      <a routerLink="/iam/vehicles/new" class="semibold">{{ 'vehicle.add' | translate }}</a>
-    </p>
+      <a routerLink="/iam/vehicles" class="semibold">{{ 'option.vehicles' | translate }}</a>
+    </div>
   }
-  @if (limitReached()) {
-    <p class="trazza-message tag-warn mb-3" role="status">
-      {{ 'billing.limit-reached' | translate }}
-      <a routerLink="/billing/plan" class="semibold">{{ 'billing.upgrade' | translate }}</a>
-    </p>
-  }
-  <div class="trazza-grid">
-    <form class="trazza-panel span-8-lg" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <app-address-fields [group]="form.controls.origin" fieldId="origin" labelKey="return-route.origin"/>
-      <app-address-fields [group]="form.controls.destination" fieldId="destination" labelKey="return-route.destination"/>
-      <div class="grid-3">
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'fields.departure-date' | translate }}</mat-label>
-          <input matInput id="departureDate" [matDatepicker]="departurePicker" [min]="today" formControlName="departureDate" required>
-          <mat-datepicker-toggle matIconSuffix [for]="departurePicker"/>
-          <mat-datepicker #departurePicker/>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'fields.from' | translate }}</mat-label>
-          <mat-select id="windowStart" formControlName="start">
-            @for (slot of timeSlots; track slot) {
-              <mat-option [value]="slot">{{ slot }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'fields.to' | translate }}</mat-label>
-          <mat-select id="windowEnd" formControlName="end">
-            @for (slot of timeSlots; track slot) {
-              <mat-option [value]="slot">{{ slot }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-      </div>
+  <form class="trazza-panel" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="form-grid">
       <mat-form-field appearance="outline">
         <mat-label>{{ 'fields.vehicle' | translate }}</mat-label>
-        <mat-select id="vehicle" formControlName="vehicleId">
-          @for (vehicle of vehicles(); track vehicle.id) {
-            <mat-option [value]="vehicle.id">
-              {{ vehicle.label }} · {{ vehicle.capacity.weightKg | trazzaNumber }} kg · {{ vehicle.capacity.volumeM3 | trazzaNumber }} m³
-            </mat-option>
+        <mat-select formControlName="vehicleId">
+          @for (vehicle of fleet.activeVehicles(); track vehicle.id) {
+            <mat-option [value]="vehicle.id">{{ vehicle.label }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
-      <div class="form-grid">
-        <mat-form-field appearance="outline" subscriptSizing="dynamic">
-          <mat-label>{{ 'fields.available-capacity' | translate }}</mat-label>
-          <input matInput id="capacity" type="number" min="0" formControlName="availableWeightKg" required>
-          <span matTextSuffix>kg</span>
-          @if (exceedsVehicle()) {
-            <mat-hint class="hint-danger">{{ 'validation.capacity-exceeds-vehicle' | translate }} ({{ selectedVehicle()!.capacity.weightKg | trazzaNumber }} kg)</mat-hint>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'fields.driver' | translate }}</mat-label>
+        <mat-select formControlName="driverId">
+          <mat-option [value]="null">{{ 'return-route.no-driver' | translate }}</mat-option>
+          @for (driver of fleet.activeDrivers(); track driver.id) {
+            <mat-option [value]="driver.id">{{ driver.fullName }}</mat-option>
           }
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'fields.available-volume' | translate }}</mat-label>
-          <input matInput id="volume" type="number" min="0" step="0.1" formControlName="availableVolumeM3">
-          <span matTextSuffix>m³</span>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'fields.max-detour' | translate }}</mat-label>
-          <mat-select id="detour" formControlName="maxDetourKm">
-            @for (option of detourOptions; track option) {
-              <mat-option [value]="option">{{ option }} km</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'fields.departure' | translate }}</mat-label>
+        <input matInput type="datetime-local" formControlName="departureAt" [min]="minDateTime">
+      </mat-form-field>
+      <div class="stack">
+        <span class="semibold text-sm">{{ 'fields.max-shipments' | translate }}</span>
+        <mat-button-toggle-group formControlName="maxShipments" hideSingleSelectionIndicator [attr.aria-label]="'fields.max-shipments' | translate">
+          <mat-button-toggle [value]="1">1</mat-button-toggle>
+          <mat-button-toggle [value]="2">2</mat-button-toggle>
+        </mat-button-toggle-group>
+        <small class="trazza-muted text-sm">{{ 'return-route.max-shipments-hint' | translate }}</small>
       </div>
-      <div class="mb-3">
-        <span class="text-sm semibold" id="cargo-types-label">{{ 'fields.cargo-types' | translate }} *</span>
-        <mat-chip-listbox multiple formControlName="acceptedCargoTypes" aria-labelledby="cargo-types-label" class="mt-1">
-          @for (type of cargoTypes; track type) {
-            <mat-chip-option [value]="type">{{ 'cargo-types.' + type | translate }}</mat-chip-option>
-          }
-        </mat-chip-listbox>
+    </div>
+    <div class="trazza-grid mt-3">
+      <div class="span-6-lg">
+        <app-map-picker [(value)]="origin" [label]="'fields.origin' | translate" inputId="route-origin" [savedAddresses]="fleet.savedAddresses()"/>
       </div>
-      @if (errorMessage()) {
-        <p class="trazza-message tag-danger" role="alert">{{ errorMessage() }}</p>
-      }
-      <div class="form-actions">
-        <button mat-stroked-button type="button" (click)="cancel()">{{ 'actions.cancel' | translate }}</button>
-        <button mat-flat-button type="submit" [disabled]="saving() || !vehicles().length"><mat-icon>send</mat-icon>{{ 'return-route.publish' | translate }}</button>
+      <div class="span-6-lg">
+        <app-map-picker [(value)]="destination" [label]="'fields.destination' | translate" inputId="route-destination" [savedAddresses]="fleet.savedAddresses()"/>
       </div>
-    </form>
-    <app-route-preview class="span-4-lg"
-                       [from]="formValue().origin?.district || null"
-                       [to]="formValue().destination?.district || null"
-                       [distanceKm]="estimation()?.distanceKm ?? null"
-                       [durationMinutes]="estimation()?.durationMinutes ?? null"
-                       hintKey="return-route.preview-hint"
-                       [hintParams]="{ km: formValue().maxDetourKm ?? 0 }"/>
-  </div>
+    </div>
+    <div class="form-actions mt-3">
+      <a mat-button routerLink="/matchmaking/return-routes">{{ 'actions.cancel' | translate }}</a>
+      <button mat-flat-button type="submit" [disabled]="sending()"><mat-icon>check</mat-icon>{{ 'return-route.publish' | translate }}</button>
+    </div>
+  </form>
 </section>
