@@ -1,0 +1,20 @@
+<h2 mat-dialog-title>{{ 'plan.subscribe-to' | translate: { name: plan.name } }}</h2>
+<mat-dialog-content>
+  <p class="semibold text-sm mb-1">{{ 'plan.choose-trucks' | translate }} ({{ rangeText() }})</p>
+  @if (fleet.activeVehicles().length) {
+    <div class="stack mb-2">
+      @for (vehicle of fleet.activeVehicles(); track vehicle.id) {
+        <mat-checkbox [checked]="vehicleIds().includes(vehicle.id)" (change)="toggle(vehicle.id, $event.checked)">{{ vehicle.label }}</mat-checkbox>
+      }
+    </div>
+  } @else {
+    <div class="trazza-message mb-2">{{ 'return-route.no-vehicles' | translate }}</div>
+  }
+  <p class="text-lg">{{ 'plan.monthly-total' | translate }}: <b>{{ total() | trazzaMoney: plan.currency }}</b></p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button type="button" mat-dialog-close>{{ 'actions.cancel' | translate }}</button>
+  <button mat-flat-button type="button" [disabled]="!validCount() || sending()" (click)="subscribe()">
+    <mat-icon>credit_card</mat-icon>{{ 'plan.pay-simulated' | translate }}
+  </button>
+</mat-dialog-actions>

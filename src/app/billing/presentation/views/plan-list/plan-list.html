@@ -1,0 +1,27 @@
+<section class="trazza-page">
+  <header class="trazza-page-header">
+    <div>
+      <h1>{{ 'plan.title' | translate }}</h1>
+      <p>{{ 'plan.subtitle' | translate }}</p>
+    </div>
+  </header>
+  <div class="trazza-grid">
+    @for (plan of store.plans(); track plan.code) {
+      <article class="trazza-panel span-4-md plan-card">
+        <h2 class="text-lg m-0">{{ plan.name }}</h2>
+        <div>
+          <span class="trazza-kpi">{{ plan.price | trazzaMoney: plan.currency }}</span>
+          <span class="trazza-muted"> {{ (plan.isPackage ? 'plan.per-month' : 'plan.per-truck-month') | translate }}</span>
+        </div>
+        <div class="text-sm">{{ 'plan.types.' + key(plan.monitoringType) | translate }}</div>
+        <div class="text-sm trazza-muted">{{ rangeText(plan) }}</div>
+        @if (plan.includesIotDevice) {
+          <app-status-tag tone="info" labelKey="plan.includes-iot"/>
+        }
+        <span class="grow"></span>
+        <button mat-flat-button type="button" (click)="choose(plan)">{{ 'plan.subscribe' | translate }}</button>
+      </article>
+    }
+  </div>
+  <p class="text-sm trazza-muted mt-3">{{ 'plan.simulated-note' | translate }}</p>
+</section>
