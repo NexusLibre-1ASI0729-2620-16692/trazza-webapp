@@ -1,39 +1,29 @@
-import {ChangeDetectionStrategy, Component, computed, inject, signal} from '@angular/core';
-import {MatButtonToggleModule} from '@angular/material/button-toggle';
-import {MatProgressBar} from '@angular/material/progress-bar';
-import {MatIcon} from '@angular/material/icon';
+import {ChangeDetectionStrategy, Component, computed, inject, OnInit} from '@angular/core';
+import {RouterLink} from '@angular/router';
+import {MatTabsModule} from '@angular/material/tabs';
 import {TranslatePipe} from '@ngx-translate/core';
 import {ReputationStore} from '../../../application/reputation.store';
-import {StarRating} from '../../components/star-rating/star-rating';
-import {EmptyState} from '../../../../shared/presentation/components/empty-state/empty-state';
-import {StatusTag} from '../../../../shared/presentation/components/status-tag/status-tag';
+import {FeedbackService} from '../../../../shared/presentation/services/feedback.service';
 import {LocaleService} from '../../../../shared/presentation/services/locale.service';
-import {InitialsPipe} from '../../../../shared/presentation/pipes/initials.pipe';
+import {StarRating} from '../../../../shared/presentation/components/star-rating/star-rating';
 import {TrazzaDatePipe} from '../../../../shared/presentation/pipes/trazza-date.pipe';
-
-type RatingView = 'received' | 'given';
 
 @Component({
   selector: 'app-rating-list',
-  imports: [MatButtonToggleModule, MatProgressBar, MatIcon, TranslatePipe, StarRating, EmptyState, StatusTag, InitialsPipe, TrazzaDatePipe],
+  imports: [RouterLink, MatTabsModule, TranslatePipe, StarRating, TrazzaDatePipe],
   templateUrl: './rating-list.html',
-  styleUrl: './rating-list.css',
+  styles: `.summary { gap: 1rem; } .rating-row { padding: 0.75rem 0; }`,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RatingList {
+export class RatingList implements OnInit {
   protected readonly store = inject(ReputationStore);
   protected readonly locale = inject(LocaleService);
+  private readonly feedback = inject(FeedbackService);
 
-  protected readonly view = signal<RatingView>('received');
+  protected readonly tabs = ['received', 'given'] as const;
+  protected readonly roundedAverage = computed(() => Math.round(this.store.averageScore() ?? 0));
 
-  protected readonly summary = this.store.mySummary;
-
-  protected readonly starLevels = [5, 4, 3, 2, 1];
-
-  protected readonly ratings = computed(() => this.view() === 'received' ? this.store.myReceivedRatings() : this.store.myGivenRatings());
-
-  protected percentage(stars: number): number {
-    const summary = this.summary();
-    return summary.count ? Math.round(summary.distribution[stars - 1] / summary.count * 100) : 0;
+  ngOnInit(): void {
+    this.store.loadRatings().catch(error => this.feedback.showError(error));
   }
 }
