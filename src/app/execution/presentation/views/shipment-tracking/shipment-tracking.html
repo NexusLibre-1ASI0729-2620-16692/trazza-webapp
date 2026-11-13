@@ -1,0 +1,306 @@
+<section class="shipment-tracking">
+
+  <header class="shipment-tracking__header">
+
+    <div>
+
+      <span class="shipment-tracking__eyebrow">
+        Seguimiento
+      </span>
+
+      <h1>Seguimiento de envío</h1>
+
+      @if (shipment) {
+        <p>
+          {{ shipment.code }}
+        </p>
+      }
+
+    </div>
+
+    @if (shipment) {
+      <span class="shipment-tracking__status">
+        {{ shipment.status.value }}
+      </span>
+    }
+
+  </header>
+
+
+  @if (executionStore.loading()) {
+
+    <div class="shipment-tracking__loading">
+
+      <mat-spinner diameter="40"></mat-spinner>
+
+      <p>
+        Cargando información del envío...
+      </p>
+
+    </div>
+
+  } @else if (!shipment) {
+
+    <mat-card>
+
+      <mat-card-content class="shipment-tracking__empty">
+
+        <mat-icon>
+          local_shipping
+        </mat-icon>
+
+        <h2>
+          No tienes un envío activo
+        </h2>
+
+        <p>
+          Cuando tengas un envío en proceso aparecerá aquí.
+        </p>
+
+      </mat-card-content>
+
+    </mat-card>
+
+  } @else {
+
+    <div class="shipment-tracking__grid">
+
+      <!-- Información principal -->
+
+      <mat-card class="shipment-tracking__card">
+
+        <mat-card-header>
+
+          <mat-card-title>
+            Tu envío
+          </mat-card-title>
+
+          <mat-card-subtitle>
+            {{ shipment.code }}
+          </mat-card-subtitle>
+
+        </mat-card-header>
+
+        <mat-card-content>
+
+          <div class="shipment-tracking__details">
+
+            <div>
+              <span>Origen</span>
+              <strong>
+                {{ shipment.pickup.fullAddress }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Destino</span>
+              <strong>
+                {{ shipment.delivery.fullAddress }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Transportista</span>
+              <strong>
+                {{ shipment.carrierName }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Vehículo</span>
+              <strong>
+                {{ shipment.vehicleLabel }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Carga</span>
+              <strong>
+                {{ shipment.cargoDescription }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Peso</span>
+              <strong>
+                {{ shipment.weightKg }} kg
+              </strong>
+            </div>
+
+          </div>
+
+        </mat-card-content>
+
+      </mat-card>
+
+
+      <!-- ETA -->
+
+      <mat-card class="shipment-tracking__card">
+
+        <mat-card-header>
+
+          <mat-card-title>
+            Tiempo estimado
+          </mat-card-title>
+
+        </mat-card-header>
+
+        <mat-card-content class="shipment-tracking__eta">
+
+          <mat-icon>
+            schedule
+          </mat-icon>
+
+          <strong>
+            {{ etaLabel }}
+          </strong>
+
+          <span>
+            Tiempo estimado hasta el destino
+          </span>
+
+        </mat-card-content>
+
+      </mat-card>
+
+
+      <!-- Mapa -->
+
+      <mat-card class="shipment-tracking__card shipment-tracking__card--wide">
+
+        <mat-card-header>
+
+          <mat-card-title>
+            Ubicación del envío
+          </mat-card-title>
+
+        </mat-card-header>
+
+        <mat-card-content>
+
+          <app-tracking-map
+            [currentLocation]="shipment.currentLocation"
+            [isOffRoute]="shipment.isOffRoute"
+            [deviationKm]="shipment.deviationKm">
+          </app-tracking-map>
+
+        </mat-card-content>
+
+      </mat-card>
+
+
+      <!-- Alerta de desvío -->
+
+      @if (shipment.isOffRoute) {
+
+        <mat-card
+          class="shipment-tracking__card shipment-tracking__warning">
+
+          <mat-card-content>
+
+            <div class="shipment-tracking__warning-content">
+
+              <mat-icon>
+                warning
+              </mat-icon>
+
+              <div>
+
+                <strong>
+                  Desvío detectado
+                </strong>
+
+                <p>
+                  El vehículo se encuentra aproximadamente
+                  {{ shipment.deviationKm | number:'1.1-1' }}
+                  km fuera de la ruta esperada.
+                </p>
+
+              </div>
+
+            </div>
+
+          </mat-card-content>
+
+        </mat-card>
+
+      }
+
+
+      <!-- Acciones -->
+
+      <mat-card class="shipment-tracking__card">
+
+        <mat-card-header>
+
+          <mat-card-title>
+            Acciones
+          </mat-card-title>
+
+        </mat-card-header>
+
+        <mat-card-content>
+
+          <div class="shipment-tracking__actions">
+
+            @if (shipment.status.isDelivered) {
+
+              <button
+                mat-flat-button
+                type="button"
+                (click)="confirmReception()">
+
+                <mat-icon>
+                  check_circle
+                </mat-icon>
+
+                Confirmar recepción
+
+              </button>
+
+            }
+
+            @if (shipment.status.isActive) {
+
+              <button
+                mat-stroked-button
+                type="button"
+                (click)="reportIncident()">
+
+                <mat-icon>
+                  report_problem
+                </mat-icon>
+
+                Reportar incidencia
+
+              </button>
+
+            }
+
+          </div>
+
+        </mat-card-content>
+
+      </mat-card>
+
+
+      <!-- Timeline -->
+
+      <mat-card class="shipment-tracking__card">
+
+        <mat-card-content>
+
+          <app-shipment-timeline
+            [shipment]="shipment">
+          </app-shipment-timeline>
+
+        </mat-card-content>
+
+      </mat-card>
+
+    </div>
+
+  }
+
+</section>

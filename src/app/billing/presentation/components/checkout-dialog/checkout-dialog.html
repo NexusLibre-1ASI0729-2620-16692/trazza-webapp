@@ -1,0 +1,49 @@
+<div class="dialog-backdrop" *ngIf="visible">
+  <div class="dialog">
+    <h2>Actualizar a Plan PRO</h2>
+
+    <form (ngSubmit)="confirm()">
+      <div class="field">
+        <label>Número de tarjeta</label>
+        <input type="text" [(ngModel)]="form.cardNumber" name="cardNumber" placeholder="4242 4242 4242 4242" required />
+      </div>
+
+      <div class="field">
+        <label>Titular</label>
+        <input type="text" [(ngModel)]="form.holderName" name="holderName" placeholder="Valeria Torres" required />
+      </div>
+
+      <div class="field">
+        <label>Vencimiento (MM/YY)</label>
+        <input type="text" [(ngModel)]="form.expiry" name="expiry" placeholder="12/30" required />
+      </div>
+
+      <div class="field">
+        <label>Tipo de comprobante</label>
+        <select [(ngModel)]="form.receiptType" name="receiptType">
+          <option value="boleta">Boleta</option>
+          <option value="factura">Factura</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Nombre del cliente</label>
+        <input type="text" [(ngModel)]="form.customerName" name="customerName" required />
+      </div>
+
+      <div class="field">
+        <label>Documento (DNI/RUC)</label>
+        <input type="text" [(ngModel)]="form.customerDocument" name="customerDocument" required />
+      </div>
+
+      <div class="error" *ngIf="error()">{{ error() }}</div>
+
+      <div class="actions">
+        <button type="button" (click)="close()" [disabled]="processing()">Cancelar</button>
+        <button type="submit" [disabled]="processing()">
+          {{ processing() ? 'Procesando...' : 'Pagar S/ 39.90' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

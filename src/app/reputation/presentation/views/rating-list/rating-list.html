@@ -1,0 +1,56 @@
+<section class="trazza-page">
+  <header class="trazza-page-header">
+    <div>
+      <h1>{{ 'reputation.title' | translate }}</h1>
+      <p>{{ 'reputation.subtitle' | translate }}</p>
+    </div>
+  </header>
+  <div class="trazza-grid">
+    <aside class="trazza-panel summary span-4-lg">
+      <div class="row">
+        <span class="trazza-kpi">{{ summary().count ? summary().average.toFixed(1) : '—' }}</span>
+        <mat-icon class="summary-star" aria-hidden="true">star</mat-icon>
+      </div>
+      <div class="trazza-muted text-sm mb-3">{{ 'reputation.based-on' | translate: { count: summary().count } }}</div>
+      @for (stars of starLevels; track stars) {
+        <div class="distribution-row">
+          <span class="text-sm">{{ stars }} ★</span>
+          <mat-progress-bar mode="determinate" [value]="percentage(stars)" [attr.aria-label]="stars + ' ★'"/>
+          <span class="text-sm trazza-muted count">{{ summary().distribution[stars - 1] }}</span>
+        </div>
+      }
+    </aside>
+    <div class="span-8-lg">
+      <mat-button-toggle-group [value]="view()" (change)="view.set($event.value)" hideSingleSelectionIndicator class="mb-3" [attr.aria-label]="'reputation.title' | translate">
+        <mat-button-toggle value="received">{{ 'reputation.received' | translate }}</mat-button-toggle>
+        <mat-button-toggle value="given">{{ 'reputation.given' | translate }}</mat-button-toggle>
+      </mat-button-toggle-group>
+      @for (rating of ratings(); track rating.id) {
+        <article class="trazza-panel mb-2">
+          <div class="row-between">
+            <div class="row">
+              <span class="trazza-avatar" aria-hidden="true">{{ (view() === 'received' ? rating.raterName : rating.target.name) | initials }}</span>
+              <div>
+                <div class="semibold">{{ view() === 'received' ? rating.raterName : rating.target.name }}</div>
+                <div class="text-xs trazza-muted">{{ rating.createdAt | trazzaDate: locale.language() }}</div>
+              </div>
+            </div>
+            <app-star-rating [value]="rating.score.value" [readonly]="true"/>
+          </div>
+          @if (rating.tags.length) {
+            <div class="row wrap mt-2">
+              @for (tag of rating.tags; track tag) {
+                <app-status-tag [labelKey]="'rating-tags.' + tag" tone="secondary"/>
+              }
+            </div>
+          }
+          @if (rating.comment) {
+            <p class="mb-0 mt-2">“{{ rating.comment }}”</p>
+          }
+        </article>
+      } @empty {
+        <app-empty-state icon="star_border" titleKey="reputation.empty"/>
+      }
+    </div>
+  </div>
+</section>

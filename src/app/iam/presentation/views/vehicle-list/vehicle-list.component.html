@@ -1,0 +1,35 @@
+<div class="trazza-page">
+  <div class="trazza-page-header flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+      <h1 class="m-0">{{ 'vehicle.list-title' | translate }}</h1>
+      <p class="trazza-muted mt-1">{{ 'vehicle.list-subtitle' | translate }}</p>
+    </div>
+    <button mat-flat-button color="primary" (click)="navigateToNew()">
+      <mat-icon>add</mat-icon>
+      {{ 'vehicle.add' | translate }}
+    </button>
+  </div>
+
+  <div *ngIf="vehicles.length > 0; else emptyState" class="vehicle-grid">
+    <div *ngFor="let vehicle of vehicles">
+      <app-vehicle-card 
+        [vehicle]="vehicle" 
+        (edit)="navigateToEdit($event)" 
+        (toggle)="toggleVehicle($event)" 
+        (remove)="confirmRemove($event)">
+      </app-vehicle-card>
+    </div>
+  </div>
+
+  <ng-template #emptyState>
+    <div class="trazza-panel text-center empty-state">
+      <mat-icon class="text-4xl text-primary">local_shipping</mat-icon>
+      <p class="font-semibold mb-1">{{ 'vehicle.empty-title' | translate }}</p>
+      <p class="trazza-muted mt-0">{{ 'vehicle.empty-content' | translate }}</p>
+      <button mat-flat-button color="primary" class="mt-3" (click)="navigateToNew()">
+        <mat-icon>add</mat-icon>
+        {{ 'vehicle.add' | translate }}
+      </button>
+    </div>
+  </ng-template>
+</div>

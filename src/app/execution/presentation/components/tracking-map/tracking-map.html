@@ -1,0 +1,65 @@
+<section class="tracking-map">
+
+  <div class="tracking-map__header">
+    <div>
+      <h3>Ubicación del envío</h3>
+
+      @if (currentLocation()) {
+        <p>
+          Latitud:
+          {{ currentLocation()!.latitude | number:'1.4-4' }}
+
+          ·
+
+          Longitud:
+          {{ currentLocation()!.longitude | number:'1.4-4' }}
+        </p>
+      } @else {
+        <p>Ubicación no disponible</p>
+      }
+    </div>
+
+    @if (isOffRoute()) {
+      <span class="tracking-map__alert">
+        Desvío detectado
+      </span>
+    }
+  </div>
+
+  <div class="tracking-map__canvas">
+
+    @if (currentLocation()) {
+
+      <div class="tracking-map__point tracking-map__point--current">
+        <span></span>
+        <strong>Vehículo</strong>
+      </div>
+
+      @if (deliveryLocation()) {
+        <div class="tracking-map__point tracking-map__point--delivery">
+          <span></span>
+          <strong>Destino</strong>
+        </div>
+      }
+
+      <div class="tracking-map__route"></div>
+
+    } @else {
+
+      <div class="tracking-map__empty">
+        <p>No hay información de ubicación disponible.</p>
+      </div>
+
+    }
+
+  </div>
+
+  @if (isOffRoute()) {
+    <div class="tracking-map__deviation">
+      <strong>Atención:</strong>
+      el vehículo presenta un desvío aproximado de
+      {{ deviationKm() | number:'1.1-1' }} km.
+    </div>
+  }
+
+</section>

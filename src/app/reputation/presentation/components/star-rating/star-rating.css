@@ -1,0 +1,27 @@
+.stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
+  border-radius: 6px;
+}
+
+.stars:focus-visible {
+  outline: 2px solid var(--trazza-accent);
+  outline-offset: 2px;
+}
+
+.star-button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.star {
+  color: #c4c8d4;
+}
+
+.star.filled {
+  color: #f5a623;
+}

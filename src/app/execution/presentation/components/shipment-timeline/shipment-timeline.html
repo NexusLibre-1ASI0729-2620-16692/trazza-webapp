@@ -1,0 +1,74 @@
+<section class="shipment-timeline">
+
+  <div class="shipment-timeline__header">
+    <h3>Historial del envío</h3>
+  </div>
+
+  @if (events.length > 0) {
+
+    <div class="shipment-timeline__list">
+
+      @for (event of events; track $index) {
+
+        <article class="shipment-timeline__item">
+
+          <div class="shipment-timeline__marker">
+            <span class="material-symbols-outlined">
+              {{ getEventIcon(event.type) }}
+            </span>
+          </div>
+
+          <div class="shipment-timeline__content">
+
+            <div class="shipment-timeline__title">
+              {{ getEventLabel(event.type) }}
+            </div>
+
+            <time class="shipment-timeline__date">
+              {{ event.occurredAt | date:'dd/MM/yyyy HH:mm' }}
+            </time>
+
+            @if (event.details && objectKeys(event.details).length > 0) {
+
+              <div class="shipment-timeline__details">
+
+                @for (
+                  detail of objectEntries(event.details);
+                  track detail[0]
+                  ) {
+
+                  <div class="shipment-timeline__detail">
+
+                    <span>
+                      {{ detail[0] }}
+                    </span>
+
+                    <strong>
+                      {{ detail[1] }}
+                    </strong>
+
+                  </div>
+
+                }
+
+              </div>
+
+            }
+
+          </div>
+
+        </article>
+
+      }
+
+    </div>
+
+  } @else {
+
+    <div class="shipment-timeline__empty">
+      <p>No hay eventos registrados para este envío.</p>
+    </div>
+
+  }
+
+</section>

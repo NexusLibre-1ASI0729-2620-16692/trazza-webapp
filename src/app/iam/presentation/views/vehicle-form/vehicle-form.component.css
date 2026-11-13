@@ -1,0 +1,46 @@
+.trazza-page {
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.trazza-page-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.m-0 { margin: 0; }
+.mt-1 { margin-top: 0.25rem; }
+.mb-4 { margin-bottom: 1.5rem; }
+.mb-3 { margin-bottom: 1rem; }
+.mt-2 { margin-top: 0.5rem; }
+.trazza-muted { color: var(--trazza-muted, #6c757d); }
+
+.form-container {
+  max-width: 44rem;
+}
+
+.grid-3 {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .grid-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+.w-full { width: 100%; }
+.flex { display: flex; }
+.align-items-center { align-items: center; }
+.gap-2 { gap: 0.5rem; }
+
+.error-message {
+  color: var(--trazza-danger, #b3261e);
+  background-color: var(--trazza-danger-soft, #fde7e5);
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}

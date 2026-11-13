@@ -1,0 +1,25 @@
+.incident-dialog__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 420px;
+  padding-top: 8px;
+}
+
+.incident-dialog__validation {
+  margin: -8px 0 0;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+mat-dialog-content {
+  max-height: 70vh;
+}
+
+mat-dialog-actions {
+  gap: 8px;
+}

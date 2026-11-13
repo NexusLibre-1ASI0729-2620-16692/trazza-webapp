@@ -1,0 +1,115 @@
+.shipment-timeline {
+  width: 100%;
+}
+
+.shipment-timeline__header {
+  margin-bottom: 20px;
+
+  h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
+}
+
+.shipment-timeline__list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: 16px;
+    width: 2px;
+    background: rgba(0, 0, 0, 0.12);
+  }
+}
+
+.shipment-timeline__item {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  padding-bottom: 24px;
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+}
+
+.shipment-timeline__marker {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+
+  .material-symbols-outlined {
+    font-size: 18px;
+  }
+}
+
+.shipment-timeline__content {
+  flex: 1;
+  padding-top: 2px;
+}
+
+.shipment-timeline__title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.shipment-timeline__date {
+  display: block;
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.shipment-timeline__details {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.035);
+}
+
+.shipment-timeline__detail {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 12px;
+
+  & + & {
+    margin-top: 6px;
+  }
+
+  span {
+    opacity: 0.65;
+  }
+
+  strong {
+    text-align: right;
+    word-break: break-word;
+  }
+}
+
+.shipment-timeline__empty {
+  padding: 24px;
+  text-align: center;
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+
+  p {
+    margin: 0;
+    opacity: 0.6;
+  }
+}
