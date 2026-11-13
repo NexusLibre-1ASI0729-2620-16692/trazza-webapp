@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>{{ 'offer.title' | translate }}</h2>
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <mat-dialog-content>
+    <div class="mb-3">
+      <div class="trazza-route">{{ data.shipment.label }}</div>
+      <div class="text-sm trazza-muted">{{ data.shipment.description }} · {{ data.shipment.weightKg | trazzaNumber }} kg · {{ data.shipment.volumeM3 | trazzaNumber }} m³</div>
+      <div class="text-sm trazza-muted">{{ 'shipment.pickup-window' | translate }}: {{ data.shipment.pickupFrom | trazzaDateTime: locale.language() }} – {{ data.shipment.pickupUntil | trazzaDateTime: locale.language() }}</div>
+    </div>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'offer.route' | translate }}</mat-label>
+      <mat-select formControlName="routeId" [placeholder]="'offer.choose-route' | translate">
+        @for (route of data.routes; track route.id) {
+          <mat-option [value]="route.id">{{ route.label }} · {{ route.departureAt | trazzaDateTime: locale.language() }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'offer.rate' | translate }}</mat-label>
+      <span matTextPrefix>S/&nbsp;</span>
+      <input matInput type="number" min="1" step="0.5" formControlName="rate" cdkFocusInitial>
+      <mat-hint>{{ 'offer.single-offer-hint' | translate }}</mat-hint>
+    </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>{{ 'actions.cancel' | translate }}</button>
+    <button mat-flat-button type="submit" [disabled]="sending()"><mat-icon>send</mat-icon>{{ 'offer.send' | translate }}</button>
+  </mat-dialog-actions>
+</form>

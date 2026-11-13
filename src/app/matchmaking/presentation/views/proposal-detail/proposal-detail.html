@@ -1,0 +1,51 @@
+<section class="trazza-page">
+  <header class="trazza-page-header">
+    <div>
+      <h1>{{ 'proposal.detail-title' | translate }}</h1>
+    </div>
+    <a mat-button routerLink="/matchmaking/proposals"><mat-icon>arrow_back</mat-icon>{{ 'actions.back' | translate }}</a>
+  </header>
+  @if (proposal(); as proposal) {
+    <div class="trazza-grid">
+      <div class="span-7-lg stack">
+        <article class="trazza-panel stack">
+          <div class="row-between">
+            <span class="trazza-kpi">{{ proposal.offeredRate | trazzaMoney: proposal.currency }}</span>
+            <app-status-tag [status]="proposal.status"/>
+          </div>
+          <div><span class="semibold">{{ 'columns.shipment' | translate }}:</span> {{ proposal.shipment.label }}</div>
+          <div class="text-sm trazza-muted">{{ proposal.shipment.description }} · {{ proposal.shipment.weightKg | trazzaNumber }} kg · {{ proposal.shipment.volumeM3 | trazzaNumber }} m³</div>
+          <div class="text-sm trazza-muted">{{ 'shipment.pickup-window' | translate }}: {{ proposal.shipment.pickupFrom | trazzaDateTime: locale.language() }} – {{ proposal.shipment.pickupUntil | trazzaDateTime: locale.language() }}</div>
+          <div><span class="semibold">{{ 'columns.route' | translate }}:</span> {{ proposal.route.label }}</div>
+          <div class="text-sm trazza-muted">{{ 'columns.departure' | translate }}: {{ proposal.route.departureAt | trazzaDateTime: locale.language() }} · {{ proposal.route.vehicle.plate }} {{ proposal.route.vehicle.model }}</div>
+          <div class="text-sm">
+            <span class="semibold">{{ (iamStore.isCarrier() ? 'roles.merchant' : 'roles.carrier') | translate }}:</span>
+            {{ counterpart()?.name }}
+            @if (counterpart()?.phone) {
+              · <mat-icon class="inline-icon" aria-hidden="true">call</mat-icon> {{ counterpart()?.phone }}
+            }
+          </div>
+          @if (!counterpart()?.phone) {
+            <small class="trazza-muted text-sm">{{ 'proposal.phone-hidden' | translate }}</small>
+          }
+          <div class="form-actions mt-2">
+            @if (proposal.isPending && iamStore.isMerchant()) {
+              <button mat-stroked-button type="button" class="warn-button" [disabled]="busy()" (click)="ask('reject')">{{ 'proposal.reject' | translate }}</button>
+              <button mat-flat-button type="button" [disabled]="busy()" (click)="ask('accept')"><mat-icon>check</mat-icon>{{ 'proposal.accept' | translate }}</button>
+            }
+            @if (proposal.isPending && iamStore.isCarrier()) {
+              <button mat-stroked-button type="button" class="warn-button" [disabled]="busy()" (click)="ask('cancel')">{{ 'proposal.cancel' | translate }}</button>
+            }
+            @if (proposal.tripId) {
+              <a mat-flat-button [routerLink]="['/execution/trips', proposal.tripId]"><mat-icon>map</mat-icon>{{ 'proposal.go-to-trip' | translate }}</a>
+            }
+          </div>
+        </article>
+        <article class="trazza-panel"><app-route-map [stops]="stops()" height="20rem"/></article>
+      </div>
+      <div class="span-5-lg">
+        <app-chat-panel [proposalId]="proposal.id" [open]="proposal.chatOpen"/>
+      </div>
+    </div>
+  }
+</section>
