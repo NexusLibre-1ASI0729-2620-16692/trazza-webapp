@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {BaseApi} from '../../shared/infrastructure/base-api';
+import {PlatformApi} from '../../shared/infrastructure/platform-api';
 import {MatchmakingAssembler} from './matchmaking.assembler';
 import {MatchProposalResource, MessageResource, ReturnRouteResource, ShipmentRequestResource} from './matchmaking-resources';
 import {ReturnRoute} from '../domain/model/return-route.entity';
@@ -15,7 +15,7 @@ import {CreateMatchProposalCommand} from '../domain/commands/create-match-propos
 export type ProposalAction = 'accept' | 'reject' | 'cancel';
 
 @Injectable({providedIn: 'root'})
-export class MatchmakingApi extends BaseApi {
+export class MatchmakingApi extends PlatformApi {
   static readonly RETURN_ROUTES_PATH = '/return-routes';
   static readonly SHIPMENT_REQUESTS_PATH = '/shipment-requests';
   static readonly MATCH_PROPOSALS_PATH = '/match-proposals';
