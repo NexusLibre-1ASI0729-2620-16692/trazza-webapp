@@ -12,7 +12,6 @@ import {IamStore} from '../../../../iam/application/iam.store';
 import {ProfileStore} from '../../../../iam/application/profile.store';
 import {MatchmakingStore} from '../../../../matchmaking/application/matchmaking.store';
 import {ExecutionStore} from '../../../../execution/application/execution.store';
-import {BillingStore} from '../../../../billing/application/billing.store';
 import {ReputationStore} from '../../../../reputation/application/reputation.store';
 
 @Component({
@@ -29,7 +28,6 @@ export class Layout {
   private readonly profileStore = inject(ProfileStore);
   private readonly matchmakingStore = inject(MatchmakingStore);
   private readonly executionStore = inject(ExecutionStore);
-  private readonly billingStore = inject(BillingStore);
   private readonly reputationStore = inject(ReputationStore);
 
   protected readonly isDesktop = toSignal(
@@ -57,7 +55,6 @@ export class Layout {
     this.profileStore.loadProfiles();
     this.matchmakingStore.loadAll();
     this.executionStore.loadShipments();
-    this.billingStore.loadBilling();
     this.reputationStore.loadRatings();
   }
 }
