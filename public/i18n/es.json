@@ -1,5 +1,8 @@
 {
   "option": {
+    "plans": "Planes",
+    "subscriptions": "Suscripciones",
+    "settlements": "Pagos",
     "dashboard": "Inicio",
     "return-routes": "Mis rutas de retorno",
     "load-suggestions": "Cargas sugeridas",
@@ -104,6 +107,7 @@
     "receipt-type": "Comprobante"
   },
   "columns": {
+    "trip": "Viaje",
     "actions": "Acciones",
     "amount": "Monto",
     "carrier": "Transportista",
@@ -140,6 +144,13 @@
     "sort-by": "Ordenar por"
   },
   "statuses": {
+    "disputed": "En disputa",
+    "marked-paid": "Marcado pagado",
+    "paid-externally": "Pagada",
+    "past-due": "Vencida",
+    "refunded": "Reembolsado",
+    "settled": "Liquidado",
+    "waived": "Condonada",
     "active": "Activa",
     "matched": "Emparejado",
     "closed": "Cerrado",
@@ -483,6 +494,66 @@
     "average-of": "{{ average }} ({{ count }} calificaciones)",
     "empty": "Aún no hay calificaciones."
   },
+
+  "plan": {
+    "choose-trucks": "Camiones",
+    "includes-iot": "Incluye dispositivo IoT",
+    "min-trucks": "Desde {{min}} camiones",
+    "monthly-total": "Total mensual",
+    "pay-simulated": "Pagar (simulado)",
+    "per-month": "/ mes",
+    "per-truck-month": "/ camión / mes",
+    "range-trucks": "De {{min}} a {{max}} camiones",
+    "simulated-note": "Los pagos de planes son simulados en este MVP. No se cobra ninguna tarjeta.",
+    "subscribe": "Suscribirme",
+    "subscribe-to": "Suscribirme a {{name}}",
+    "subscribed": "Suscripción activa.",
+    "subtitle": "Monitorea tus camiones por ruta o con un dispositivo IoT.",
+    "title": "Planes",
+    "types": {
+      "full": "Monitoreo completo",
+      "iot-cargo": "Monitoreo de carga con dispositivo IoT",
+      "route": "Monitoreo de ruta con el GPS del celular"
+    }
+  },
+  "subscription": {
+    "cancel": "Cancelar suscripción",
+    "cancelled": "Suscripción cancelada.",
+    "confirm-cancel": "¿Cancelar esta suscripción? Los dispositivos IoT prestados se deben devolver.",
+    "empty": "No tienes suscripciones.",
+    "operation": "Operación",
+    "period": "Periodo actual",
+    "renew": "Renovar (simulado)",
+    "renewed": "Suscripción renovada.",
+    "subtitle": "Planes de tus camiones.",
+    "title": "Suscripciones"
+  },
+  "settlement": {
+    "confirm": "Confirmar recibido",
+    "confirmed": "Pago confirmado.",
+    "empty": "Aún no hay pagos de flete.",
+    "external-note": "El flete se paga directamente entre ustedes, fuera de Trazza. Aquí solo lo registras.",
+    "freight": "Fletes",
+    "mark-paid": "Marcar como pagado",
+    "marked-paid": "Marcado como pagado.",
+    "reference": "Referencia (opcional)",
+    "subtitle": "Fletes y compensaciones pagados fuera de Trazza.",
+    "title": "Pagos"
+  },
+  "compensation": {
+    "confirm-paid": "Confirmar recibido",
+    "dispute": "Disputar",
+    "done": {
+      "confirm-paid": "Compensación marcada como recibida.",
+      "dispute": "Compensación en disputa.",
+      "waive": "Compensación condonada."
+    },
+    "empty": "No hay compensaciones por lucro cesante.",
+    "rule": "Si el comerciante cancela en la hora de salida o después, se le debe al transportista el 30% de la tarifa acordada. Se paga fuera de Trazza.",
+    "title": "Compensaciones por lucro cesante",
+    "waive": "Condonar"
+  },
+
   "billing": {
     "title": "Plan y facturación",
     "subtitle": "Trazza solo cobra su propia suscripción. Las tarifas de flete se acuerdan entre transportista y emprendedor, sin comisión.",
@@ -570,6 +641,7 @@
     "detour": "El desvío supera el máximo de la ruta."
   },
   "validation": {
+    "plan-vehicle-count": "La cantidad de camiones no corresponde a este plan.",
     "address-district-invalid": "Selecciona un distrito de Lima.",
     "address-street-required": "Ingresa la dirección (mínimo 5 caracteres).",
     "already-rated": "Ya calificaste este envío.",
