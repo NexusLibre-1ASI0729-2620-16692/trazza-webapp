@@ -1,0 +1,44 @@
+<div class="dialog-backdrop" *ngIf="visible && receipt">
+  <div class="dialog">
+    <h2>Comprobante {{ receipt!.code }}</h2>
+
+    <div class="row">
+      <span>Tipo:</span>
+      <strong>{{ receipt!.type.value }}</strong>
+    </div>
+
+    <div class="row">
+      <span>Cliente:</span>
+      <strong>{{ receipt!.customerName }}</strong>
+    </div>
+
+    <div class="row">
+      <span>Documento:</span>
+      <strong>{{ receipt!.customerDocument }}</strong>
+    </div>
+
+    <div class="row">
+      <span>Subtotal:</span>
+      <strong>{{ receipt!.subtotal.formatted }}</strong>
+    </div>
+
+    <div class="row">
+      <span>IGV (18%):</span>
+      <strong>{{ receipt!.igv.formatted }}</strong>
+    </div>
+
+    <div class="row total">
+      <span>Total:</span>
+      <strong>{{ receipt!.total.formatted }}</strong>
+    </div>
+
+    <div class="row">
+      <span>Emitido:</span>
+      <strong>{{ receipt!.issuedAt }}</strong>
+    </div>
+
+    <div class="actions">
+      <button type="button" (click)="close()">Cerrar</button>
+    </div>
+  </div>
+</div>

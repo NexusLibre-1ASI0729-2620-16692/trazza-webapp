@@ -1,0 +1,24 @@
+.vehicle-photo {
+  height: 6rem;
+  background: var(--trazza-soft, #e6ebff);
+  border-radius: 8px;
+}
+
+.text-primary {
+  color: var(--trazza-accent, #0037b0);
+}
+
+.h-full { height: 100%; }
+.flex { display: flex; }
+.flex-column { flex-direction: column; }
+.justify-content-between { justify-content: space-between; }
+.align-items-start { align-items: flex-start; }
+.align-items-center { align-items: center; }
+.justify-content-center { justify-content: center; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 1rem; }
+.font-bold { font-weight: 700; }
+.text-lg { font-size: 1.125rem; }
+.text-sm { font-size: 0.875rem; }
+.trazza-muted { color: var(--trazza-muted, #6c757d); }
+.mt-auto { margin-top: auto; }

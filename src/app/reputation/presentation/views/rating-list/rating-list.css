@@ -1,0 +1,22 @@
+.summary {
+  align-self: start;
+}
+
+.summary-star {
+  color: #f5a623;
+  font-size: 1.75rem;
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.distribution-row {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr 2.5rem;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.count {
+  text-align: right;
+}

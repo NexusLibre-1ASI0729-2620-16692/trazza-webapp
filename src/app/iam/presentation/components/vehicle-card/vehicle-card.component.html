@@ -1,0 +1,36 @@
+<div class="trazza-panel h-full flex flex-column gap-3">
+  <div class="flex justify-content-between align-items-start gap-2">
+    <div>
+      <div class="font-bold text-lg">{{ vehicle.brandModel }}</div>
+      <div class="trazza-muted text-sm">{{ vehicle.plate.value }}</div>
+    </div>
+    
+    <mat-chip-set>
+      <mat-chip [style.background-color]="vehicle.active ? '#e6f4ea' : '#f8f9fa'" 
+                [style.color]="vehicle.active ? '#137333' : '#6c757d'">
+        {{ (vehicle.active ? 'vehicle.active' : 'vehicle.inactive') | translate }}
+      </mat-chip>
+    </mat-chip-set>
+  </div>
+
+  <div class="vehicle-photo flex align-items-center justify-content-center">
+    <mat-icon class="text-4xl text-primary" style="font-size: 40px; width: 40px; height: 40px;">local_shipping</mat-icon>
+  </div>
+
+  <div class="text-sm">
+    {{ 'body-types.' + vehicle.bodyType | translate }} · {{ vehicle.capacity.weightKg }} kg · {{ vehicle.capacity.volumeM3 }} m³
+  </div>
+
+  <div class="flex gap-2 mt-auto">
+    <button mat-stroked-button color="primary" (click)="edit.emit(vehicle)">
+      <mat-icon>edit</mat-icon>
+      {{ 'actions.edit' | translate }}
+    </button>
+    <button mat-button color="primary" (click)="toggle.emit(vehicle)">
+      {{ (vehicle.active ? 'vehicle.deactivate' : 'vehicle.activate') | translate }}
+    </button>
+    <button mat-icon-button color="warn" (click)="remove.emit(vehicle)" [attr.aria-label]="'actions.delete' | translate">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+</div>

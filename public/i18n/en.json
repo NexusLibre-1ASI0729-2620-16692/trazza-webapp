@@ -33,7 +33,9 @@
   "footer": {
     "copyright": "© 2026 Trazza · Return trips that move Lima",
     "powered-by": "Powered by",
-    "and": "and"
+    "and": "and",
+    "terms": "Terms & Conditions",
+    "privacy": "Privacy Policy"
   },
   "actions": {
     "accept": "Accept",
@@ -213,6 +215,7 @@
     "password-medium": "Medium",
     "password-strong": "Strong",
     "accept-terms": "I accept the Terms & Conditions and the Privacy Policy",
+    "read-terms": "Read the Terms & Conditions and the Privacy Policy",
     "submit": "Create account",
     "have-account": "Already have an account?",
     "choose-role": "Choose your account type"

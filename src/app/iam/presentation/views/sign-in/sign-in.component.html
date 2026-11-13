@@ -1,0 +1,49 @@
+<div class="sign-in-container">
+  <div class="trazza-panel shadow-2 w-full" style="max-width: 26rem; margin: 0 auto;">
+    <h1 class="text-2xl font-bold m-0">{{ 'sign-in.title' | translate }}</h1>
+    <p class="trazza-muted mt-1 mb-4">{{ 'sign-in.subtitle' | translate }}</p>
+
+    <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="flex flex-column gap-3">
+
+      <div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>{{ 'fields.email' | translate }}</mat-label>
+          <input matInput type="email" formControlName="email" placeholder="name@email.com" autocomplete="username">
+          <mat-error *ngIf="signInForm.controls['email'].hasError('required')">{{ 'validation.field-required' | translate }}</mat-error>
+          <mat-error *ngIf="signInForm.controls['email'].hasError('email')">{{ 'validation.email-invalid' | translate }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>{{ 'fields.password' | translate }}</mat-label>
+          <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password" autocomplete="current-password">
+          <button mat-icon-button matSuffix (click)="togglePasswordVisibility($event)" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword()" type="button">
+            <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+          <mat-error *ngIf="signInForm.controls['password'].hasError('required')">{{ 'validation.password-required' | translate }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div *ngIf="errorMessage()" class="error-message">
+        {{ errorMessage() }}
+      </div>
+
+      <button mat-flat-button color="primary" type="submit" class="w-full" [disabled]="iamStore.processing() || signInForm.invalid">
+        {{ 'sign-in.submit' | translate }}
+      </button>
+
+    </form>
+
+    <p class="text-sm text-center mt-4 mb-0">
+      {{ 'sign-in.no-account' | translate }}
+      <!-- Commented out sign up links until we create the component -->
+      <!-- <a routerLink="/iam/sign-up" [queryParams]="{role: 'carrier'}" class="text-primary font-semibold">{{ 'sign-in.as-carrier' | translate }}</a> ·
+      <a routerLink="/iam/sign-up" [queryParams]="{role: 'merchant'}" class="text-primary font-semibold">{{ 'sign-in.as-merchant' | translate }}</a> -->
+    </p>
+
+    <div class="divider-row"></div>
+    <p class="text-xs trazza-muted m-0 text-center">{{ 'sign-in.demo-hint' | translate }}</p>
+
+  </div>
+</div>

@@ -1,0 +1,63 @@
+<div class="plan-billing">
+  <h1>Mi Plan</h1>
+
+  <div class="plan-card">
+    <h2>Plan actual: {{ billingStore.currentPlan().code | uppercase }}</h2>
+    <p *ngIf="billingStore.currentPlan().isFree">
+      Publicaciones mensuales: {{ billingStore.currentPlan().monthlyPublications }}
+    </p>
+    <p *ngIf="!billingStore.currentPlan().isFree">
+      Publicaciones ilimitadas
+    </p>
+
+    <button *ngIf="billingStore.currentPlan().isFree" (click)="openCheckout()">
+      Actualizar a PRO — S/ 39.90
+    </button>
+  </div>
+
+  <h2>Historial de pagos</h2>
+
+  <div *ngIf="billingStore.loading()">Cargando...</div>
+
+  <table *ngIf="!billingStore.loading()">
+    <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Plan</th>
+      <th>Monto</th>
+      <th>Estado</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let tx of billingStore.myTransactions()">
+      <td>{{ tx.createdAt }}</td>
+      <td>{{ tx.plan.code }}</td>
+      <td>{{ tx.amount.formatted }}</td>
+      <td>{{ tx.status.value }}</td>
+      <td>
+        <button
+          *ngIf="billingStore.receiptForTransaction(tx.id)"
+          (click)="viewReceipt(tx.id)">
+          Ver comprobante
+        </button>
+      </td>
+    </tr>
+    <tr *ngIf="billingStore.myTransactions().length === 0">
+      <td colspan="5">No hay transacciones aún.</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <app-checkout-dialog
+    [visible]="showCheckout()"
+    (closed)="closeCheckout()"
+    (success)="onUpgradeSuccess()">
+  </app-checkout-dialog>
+
+  <app-receipt-dialog
+    [visible]="showReceipt()"
+    [receipt]="selectedReceipt()"
+    (closed)="closeReceipt()">
+  </app-receipt-dialog>
+</div>

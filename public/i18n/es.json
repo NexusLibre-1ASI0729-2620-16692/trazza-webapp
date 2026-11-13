@@ -33,7 +33,9 @@
   "footer": {
     "copyright": "© 2026 Trazza · Viajes de retorno que mueven Lima",
     "powered-by": "Desarrollado con",
-    "and": "y"
+    "and": "y",
+    "terms": "Términos y condiciones",
+    "privacy": "Política de privacidad"
   },
   "actions": {
     "accept": "Aceptar",
@@ -213,6 +215,7 @@
     "password-medium": "Media",
     "password-strong": "Fuerte",
     "accept-terms": "Acepto los Términos y Condiciones y la Política de Privacidad",
+    "read-terms": "Lee los Términos y Condiciones y la Política de Privacidad",
     "submit": "Crear cuenta",
     "have-account": "¿Ya tienes una cuenta?",
     "choose-role": "Elige tu tipo de cuenta"

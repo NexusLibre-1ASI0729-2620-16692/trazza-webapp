@@ -1,0 +1,265 @@
+<section class="active-trip">
+
+  <header class="active-trip__header">
+
+    <div>
+      <span class="active-trip__eyebrow">
+        Operación
+      </span>
+
+      <h1>Viaje activo</h1>
+
+      @if (shipment) {
+        <p>
+          {{ shipment.code }}
+        </p>
+      }
+    </div>
+
+    @if (shipment) {
+      <span class="active-trip__status">
+        {{ shipment.status.value }}
+      </span>
+    }
+
+  </header>
+
+  @if (executionStore.loading()) {
+
+    <div class="active-trip__loading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Cargando viaje...</p>
+    </div>
+
+  } @else if (!shipment) {
+
+    <mat-card>
+      <mat-card-content class="active-trip__empty">
+
+        <mat-icon>
+          local_shipping
+        </mat-icon>
+
+        <h2>No tienes un viaje activo</h2>
+
+        <p>
+          Cuando se confirme una asignación aparecerá aquí.
+        </p>
+
+      </mat-card-content>
+    </mat-card>
+
+  } @else {
+
+    <div class="active-trip__grid">
+
+      <!-- Información principal -->
+      <mat-card class="active-trip__card">
+
+        <mat-card-header>
+
+          <mat-card-title>
+            Información del envío
+          </mat-card-title>
+
+          <mat-card-subtitle>
+            {{ shipment.code }}
+          </mat-card-subtitle>
+
+        </mat-card-header>
+
+        <mat-card-content>
+
+          <div class="active-trip__details">
+
+            <div>
+              <span>Origen</span>
+              <strong>
+                {{ shipment.pickup.fullAddress }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Destino</span>
+              <strong>
+                {{ shipment.delivery.fullAddress }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Cliente</span>
+              <strong>
+                {{ shipment.merchantName }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Vehículo</span>
+              <strong>
+                {{ shipment.vehicleLabel }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Carga</span>
+              <strong>
+                {{ shipment.cargoDescription }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Peso</span>
+              <strong>
+                {{ shipment.weightKg }} kg
+              </strong>
+            </div>
+
+            <div>
+              <span>Tarifa</span>
+              <strong>
+                {{ shipment.rate.formatted }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Ventana de recojo</span>
+              <strong>
+                {{ shipment.pickupWindow }}
+              </strong>
+            </div>
+
+          </div>
+
+        </mat-card-content>
+
+      </mat-card>
+
+
+      <!-- Acciones -->
+      <mat-card class="active-trip__card">
+
+        <mat-card-header>
+
+          <mat-card-title>
+            Acciones
+          </mat-card-title>
+
+        </mat-card-header>
+
+        <mat-card-content>
+
+          <div class="active-trip__actions">
+
+            @if (shipment.status.value === 'matched') {
+
+              <button
+                mat-flat-button
+                type="button"
+                (click)="confirmPickup()">
+
+                <mat-icon>
+                  inventory_2
+                </mat-icon>
+
+                Confirmar recojo
+
+              </button>
+
+            }
+
+            @if (shipment.status.isMoving) {
+
+              <button
+                mat-stroked-button
+                type="button"
+                (click)="updateLocation()">
+
+                <mat-icon>
+                  location_on
+                </mat-icon>
+
+                Actualizar ubicación
+
+              </button>
+
+              <button
+                mat-flat-button
+                type="button"
+                (click)="confirmDelivery()">
+
+                <mat-icon>
+                  local_shipping
+                </mat-icon>
+
+                Confirmar entrega
+
+              </button>
+
+            }
+
+            @if (shipment.status.isActive) {
+
+              <button
+                mat-stroked-button
+                type="button"
+                (click)="reportIncident()">
+
+                <mat-icon>
+                  report_problem
+                </mat-icon>
+
+                Reportar incidencia
+
+              </button>
+
+            }
+
+          </div>
+
+        </mat-card-content>
+
+      </mat-card>
+
+
+      <!-- Tracking -->
+      <mat-card class="active-trip__card active-trip__card--wide">
+
+        <mat-card-header>
+
+          <mat-card-title>
+            Seguimiento
+          </mat-card-title>
+
+        </mat-card-header>
+
+        <mat-card-content>
+
+          <app-tracking-map
+            [currentLocation]="shipment.currentLocation"
+            [isOffRoute]="shipment.isOffRoute"
+            [deviationKm]="shipment.deviationKm">
+          </app-tracking-map>
+
+        </mat-card-content>
+
+      </mat-card>
+
+
+      <!-- Timeline -->
+      <mat-card class="active-trip__card active-trip__card--wide">
+
+        <mat-card-content>
+
+          <app-shipment-timeline
+            [shipment]="shipment">
+          </app-shipment-timeline>
+
+        </mat-card-content>
+
+      </mat-card>
+
+    </div>
+
+  }
+
+</section>

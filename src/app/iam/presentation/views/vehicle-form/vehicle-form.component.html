@@ -1,0 +1,78 @@
+<div class="trazza-page">
+  <div class="trazza-page-header mb-4">
+    <h1 class="m-0">{{ (isEdit ? 'vehicle.edit-title' : 'vehicle.new-title') | translate }}</h1>
+    <p class="trazza-muted mt-1">{{ 'vehicle.form-subtitle' | translate }}</p>
+  </div>
+
+  <form class="trazza-panel form-container" [formGroup]="vehicleForm" (ngSubmit)="saveVehicle()">
+
+    <div class="grid-3">
+      <div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>{{ 'fields.plate' | translate }}</mat-label>
+          <input matInput formControlName="plate" placeholder="ABC-123" style="text-transform: uppercase;">
+          <mat-error *ngIf="vehicleForm.get('plate')?.hasError('required')">{{ 'validation.field-required' | translate }}</mat-error>
+          <mat-error *ngIf="vehicleForm.get('plate')?.hasError('pattern')">{{ 'validation.plate-invalid' | translate }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>{{ 'fields.brand-model' | translate }}</mat-label>
+          <input matInput formControlName="brandModel" [placeholder]="'vehicle.brand-placeholder' | translate">
+          <mat-error *ngIf="vehicleForm.get('brandModel')?.hasError('required')">{{ 'validation.field-required' | translate }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>{{ 'fields.body-type' | translate }}</mat-label>
+          <mat-select formControlName="bodyType">
+            <mat-option *ngFor="let bt of bodyTypes" [value]="bt">
+              {{ 'body-types.' + bt | translate }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>{{ 'fields.capacity-kg' | translate }}</mat-label>
+          <input matInput type="number" formControlName="capacityKg" placeholder="3500">
+          <span matTextSuffix>kg</span>
+          <mat-error *ngIf="vehicleForm.get('capacityKg')?.hasError('required')">{{ 'validation.field-required' | translate }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>{{ 'fields.volume-m3' | translate }}</mat-label>
+          <input matInput type="number" formControlName="volumeM3" placeholder="18">
+          <span matTextSuffix>m³</span>
+          <mat-error *ngIf="vehicleForm.get('volumeM3')?.hasError('required')">{{ 'validation.field-required' | translate }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="flex align-items-center mb-4">
+        <mat-slide-toggle formControlName="active" color="primary">
+          {{ 'vehicle.available-for-routes' | translate }}
+        </mat-slide-toggle>
+      </div>
+    </div>
+
+    <div *ngIf="errorMessage()" class="error-message mt-2 mb-3">
+      {{ errorMessage() }}
+    </div>
+
+    <div class="flex gap-2">
+      <button mat-flat-button color="primary" type="submit" [disabled]="saving() || vehicleForm.invalid">
+        <mat-icon>save</mat-icon>
+        {{ 'vehicle.save' | translate }}
+      </button>
+      <button mat-stroked-button type="button" (click)="navigateBack()">
+        {{ 'actions.cancel' | translate }}
+      </button>
+    </div>
+
+  </form>
+</div>

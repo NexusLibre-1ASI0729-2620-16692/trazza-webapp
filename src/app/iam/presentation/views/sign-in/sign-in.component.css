@@ -1,0 +1,45 @@
+.sign-in-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: 1.5rem;
+}
+
+.error-message {
+  color: var(--trazza-danger, #b3261e);
+  background-color: var(--trazza-danger-soft, #fde7e5);
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.text-primary {
+  color: var(--trazza-accent, #0037b0);
+  text-decoration: none;
+}
+
+.text-primary:hover {
+  text-decoration: underline;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.gap-3 {
+  gap: 1rem;
+}
+
+.text-center {
+  text-align: center;
+}
