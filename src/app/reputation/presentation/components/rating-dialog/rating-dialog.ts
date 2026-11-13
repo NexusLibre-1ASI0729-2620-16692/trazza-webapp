@@ -1,73 +1,61 @@
-import {ChangeDetectionStrategy, Component, computed, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 import {MatButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
-import {MatChipsModule} from '@angular/material/chips';
 import {TranslatePipe} from '@ngx-translate/core';
 import {ReputationStore} from '../../../application/reputation.store';
 import {Rating} from '../../../domain/model/rating.entity';
-import {RatingTarget} from '../../../domain/model/rating-target.value-object';
-import {StarRating} from '../star-rating/star-rating';
-import {Shipment} from '../../../../execution/domain/model/shipment.entity';
-import {IamStore} from '../../../../iam/application/iam.store';
 import {FeedbackService} from '../../../../shared/presentation/services/feedback.service';
+import {StarRating} from '../../../../shared/presentation/components/star-rating/star-rating';
 
 export interface RatingDialogData {
-  shipment: Shipment;
+  tripId: string;
+  counterpartName: string;
 }
 
+/** Rate the other side of a confirmed trip. Closes with the rating. */
 @Component({
   selector: 'app-rating-dialog',
-  imports: [MatDialogModule, MatFormFieldModule, MatInput, MatButton, MatIcon, MatChipsModule, TranslatePipe, StarRating],
-  templateUrl: './rating-dialog.html',
+  imports: [FormsModule, MatDialogModule, MatFormFieldModule, MatInput, MatButton, MatIcon, TranslatePipe, StarRating],
+  template: `
+    <h2 mat-dialog-title>{{ 'rating.title' | translate: { name: data.counterpartName } }}</h2>
+    <mat-dialog-content>
+      <div class="stack">
+        <app-star-rating [readonly]="false" [(value)]="score" [label]="'rating.title' | translate: { name: data.counterpartName }"/>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'fields.comment' | translate }}</mat-label>
+          <textarea matInput rows="3" maxlength="500" [(ngModel)]="comment"></textarea>
+        </mat-form-field>
+        <small class="trazza-muted text-sm">{{ 'rating.points-hint' | translate }}</small>
+      </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button type="button" mat-dialog-close>{{ 'actions.cancel' | translate }}</button>
+      <button mat-flat-button type="button" [disabled]="sending()" (click)="submit()"><mat-icon>star</mat-icon>{{ 'rating.send' | translate }}</button>
+    </mat-dialog-actions>
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RatingDialog {
-  static readonly DEFAULT_SCORE = 5;
-
   protected readonly data = inject<RatingDialogData>(MAT_DIALOG_DATA);
-  private readonly dialogRef = inject<MatDialogRef<RatingDialog, boolean>>(MatDialogRef);
   private readonly store = inject(ReputationStore);
-  private readonly iamStore = inject(IamStore);
   private readonly feedback = inject(FeedbackService);
+  private readonly dialogRef = inject(MatDialogRef<RatingDialog, Rating | null>);
 
-  protected readonly maxCommentLength = Rating.MAX_COMMENT_LENGTH;
-
-  protected readonly targetRole = computed(() => this.iamStore.isCarrier() ? 'merchant' : 'carrier');
-
-  protected readonly targetName = computed(() => this.targetRole() === 'merchant' ? this.data.shipment.merchantName : this.data.shipment.carrierName);
-
-  protected readonly tagOptions = computed(() => RatingTarget.TAGS[this.targetRole()]);
-
-  protected readonly score = signal(RatingDialog.DEFAULT_SCORE);
-
-  protected readonly tags = signal<string[]>([]);
-
-  protected readonly comment = signal('');
-
+  protected readonly score = signal(5);
   protected readonly sending = signal(false);
+  protected comment = '';
 
-  protected readonly errorMessage = signal('');
-
-  protected updateComment(event: Event): void {
-    this.comment.set((event.target as HTMLTextAreaElement).value);
-  }
-
-  protected submit(): void {
-    this.errorMessage.set('');
+  protected async submit(): Promise<void> {
     this.sending.set(true);
-    this.store.submitRating({ shipment: this.data.shipment, score: this.score(), tags: this.tags(), comment: this.comment() }).subscribe({
-      next: () => {
-        this.sending.set(false);
-        this.feedback.showSuccess('rating.sent');
-        this.dialogRef.close(true);
-      },
-      error: error => {
-        this.sending.set(false);
-        this.errorMessage.set(this.feedback.describeError(error));
-      }
-    });
+    let rating: Rating | null = null;
+    await this.feedback.attempt(async () => {
+      rating = await this.store.rateTrip(this.data.tripId, this.score(), this.comment);
+    }, 'rating.sent');
+    this.sending.set(false);
+    if (rating) this.dialogRef.close(rating);
   }
 }
