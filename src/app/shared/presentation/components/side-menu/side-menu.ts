@@ -27,7 +27,9 @@ export class SideMenu {
     { link: '/execution/trip-history', label: 'option.trip-history', icon: 'history' },
     { link: '/iam/vehicles', label: 'option.vehicles', icon: 'directions_car' },
     { link: '/reputation/ratings', label: 'option.ratings', icon: 'star' },
-    { link: '/billing/plan', label: 'option.plan-billing', icon: 'credit_card' },
+    { link: '/billing/plans', label: 'option.plans', icon: 'credit_card' },
+    { link: '/billing/subscriptions', label: 'option.subscriptions', icon: 'event_repeat' },
+    { link: '/billing/settlements', label: 'option.settlements', icon: 'account_balance_wallet' },
     { link: '/iam/profile', label: 'option.profile', icon: 'person' }
   ]);
 
@@ -39,7 +41,7 @@ export class SideMenu {
     { link: '/execution/shipment-tracking', label: 'option.shipment-tracking', icon: 'location_on' },
     { link: '/execution/shipment-history', label: 'option.shipment-history', icon: 'history' },
     { link: '/reputation/ratings', label: 'option.ratings', icon: 'star' },
-    { link: '/billing/plan', label: 'option.plan-billing', icon: 'credit_card' },
+    { link: '/billing/settlements', label: 'option.settlements', icon: 'account_balance_wallet' },
     { link: '/iam/profile', label: 'option.profile', icon: 'person' }
   ]);
 

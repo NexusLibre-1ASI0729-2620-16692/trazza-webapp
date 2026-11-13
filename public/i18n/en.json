@@ -1,5 +1,8 @@
 {
   "option": {
+    "plans": "Plans",
+    "subscriptions": "Subscriptions",
+    "settlements": "Payments",
     "dashboard": "Dashboard",
     "return-routes": "My Return Routes",
     "load-suggestions": "Load Suggestions",
@@ -104,6 +107,7 @@
     "receipt-type": "Receipt"
   },
   "columns": {
+    "trip": "Trip",
     "actions": "Actions",
     "amount": "Amount",
     "carrier": "Carrier",
@@ -140,6 +144,13 @@
     "sort-by": "Sort by"
   },
   "statuses": {
+    "disputed": "Disputed",
+    "marked-paid": "Marked paid",
+    "paid-externally": "Paid",
+    "past-due": "Past due",
+    "refunded": "Refunded",
+    "settled": "Settled",
+    "waived": "Waived",
     "active": "Active",
     "matched": "Matched",
     "closed": "Closed",
@@ -483,6 +494,66 @@
     "average-of": "{{ average }} ({{ count }} ratings)",
     "empty": "There are no ratings yet."
   },
+
+  "plan": {
+    "choose-trucks": "Trucks",
+    "includes-iot": "Includes IoT device",
+    "min-trucks": "From {{min}} trucks",
+    "monthly-total": "Monthly total",
+    "pay-simulated": "Pay (simulated)",
+    "per-month": "/ month",
+    "per-truck-month": "/ truck / month",
+    "range-trucks": "{{min}} to {{max}} trucks",
+    "simulated-note": "Plan payments are simulated in this MVP. No card is charged.",
+    "subscribe": "Subscribe",
+    "subscribe-to": "Subscribe to {{name}}",
+    "subscribed": "Subscription active.",
+    "subtitle": "Monitor your trucks by route or with an IoT device.",
+    "title": "Plans",
+    "types": {
+      "full": "Full monitoring",
+      "iot-cargo": "Cargo monitoring with an IoT device",
+      "route": "Route monitoring with the phone GPS"
+    }
+  },
+  "subscription": {
+    "cancel": "Cancel subscription",
+    "cancelled": "Subscription cancelled.",
+    "confirm-cancel": "Cancel this subscription? Loaned IoT devices must be returned.",
+    "empty": "You have no subscriptions.",
+    "operation": "Operation",
+    "period": "Current period",
+    "renew": "Renew (simulated)",
+    "renewed": "Subscription renewed.",
+    "subtitle": "Plans of your trucks.",
+    "title": "Subscriptions"
+  },
+  "settlement": {
+    "confirm": "Confirm received",
+    "confirmed": "Payment confirmed.",
+    "empty": "No freight payments yet.",
+    "external-note": "Freight is paid directly between you, outside Trazza. Here you only record it.",
+    "freight": "Freight",
+    "mark-paid": "Mark as paid",
+    "marked-paid": "Marked as paid.",
+    "reference": "Reference (optional)",
+    "subtitle": "Freight and compensations paid outside Trazza.",
+    "title": "Payments"
+  },
+  "compensation": {
+    "confirm-paid": "Confirm received",
+    "dispute": "Dispute",
+    "done": {
+      "confirm-paid": "Compensation marked as received.",
+      "dispute": "Compensation disputed.",
+      "waive": "Compensation waived."
+    },
+    "empty": "No lost-profit compensations.",
+    "rule": "When the merchant cancels at or after the departure time, the carrier is owed 30% of the agreed rate. It is paid outside Trazza.",
+    "title": "Lost-profit compensations",
+    "waive": "Waive"
+  },
+
   "billing": {
     "title": "Plan & Billing",
     "subtitle": "Trazza charges only its own subscription. Freight rates are agreed between carrier and merchant, with no commission.",
@@ -570,6 +641,7 @@
     "detour": "The detour exceeds the maximum of the route."
   },
   "validation": {
+    "plan-vehicle-count": "The number of trucks does not fit this plan.",
     "address-district-invalid": "Select a district of Lima.",
     "address-street-required": "Enter the street address (at least 5 characters).",
     "already-rated": "You already rated this shipment.",
