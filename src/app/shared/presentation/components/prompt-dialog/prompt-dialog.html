@@ -1,0 +1,19 @@
+<h2 mat-dialog-title>{{ data.titleKey | translate }}</h2>
+<form (submit)="$event.preventDefault(); submit()">
+  <mat-dialog-content>
+    @if (data.messageKey) {
+      <p [class.trazza-message]="data.warning">{{ data.messageKey | translate: (data.params ?? {}) }}</p>
+    }
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ data.labelKey | translate }}</mat-label>
+      <textarea matInput [formControl]="text" rows="3" cdkFocusInitial></textarea>
+      @if (text.invalid && text.touched) {
+        <mat-error>{{ 'validation.field-required' | translate }}</mat-error>
+      }
+    </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" [mat-dialog-close]="null">{{ 'actions.cancel' | translate }}</button>
+    <button mat-flat-button type="submit" [class.danger-button]="data.danger">{{ (data.confirmKey ?? 'actions.accept') | translate }}</button>
+  </mat-dialog-actions>
+</form>
