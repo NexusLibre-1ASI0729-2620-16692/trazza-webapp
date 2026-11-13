@@ -1,0 +1,48 @@
+<section class="trazza-page">
+  <header class="trazza-page-header">
+    <div>
+      <h1>{{ 'points.title' | translate }}</h1>
+      <p>{{ 'points.subtitle' | translate }}</p>
+    </div>
+  </header>
+  <div class="trazza-grid">
+    <article class="trazza-panel span-4-md stack">
+      <div>
+        <div class="trazza-overline">{{ 'points.balance' | translate }}</div>
+        <div class="trazza-kpi balance">{{ store.loyalty().balance }}</div>
+      </div>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>{{ 'points.redeem' | translate }}</mat-label>
+        <input matInput type="number" min="1" [max]="store.loyalty().balance || 1" [(ngModel)]="points">
+      </mat-form-field>
+      <button mat-flat-button type="button" [disabled]="!store.loyalty().balance" (click)="redeem()"><mat-icon>redeem</mat-icon>{{ 'points.redeem' | translate }}</button>
+      <small class="trazza-muted text-sm">{{ 'points.rules' | translate }}</small>
+    </article>
+    <div class="span-8-md">
+      @if (store.loyalty().entries.length) {
+        <div class="trazza-panel table-panel">
+          <table mat-table [dataSource]="store.loyalty().entries">
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef>{{ 'columns.date' | translate }}</th>
+              <td mat-cell *matCellDef="let entry">{{ entry.createdAt | trazzaDateTime: locale.language() }}</td>
+            </ng-container>
+            <ng-container matColumnDef="reason">
+              <th mat-header-cell *matHeaderCellDef>{{ 'columns.reason' | translate }}</th>
+              <td mat-cell *matCellDef="let entry">{{ 'points.reasons.' + key(entry.reason) | translate }}</td>
+            </ng-container>
+            <ng-container matColumnDef="points">
+              <th mat-header-cell *matHeaderCellDef>{{ 'columns.points' | translate }}</th>
+              <td mat-cell *matCellDef="let entry" class="semibold" [class.positive]="entry.points > 0" [class.negative]="entry.points < 0">
+                {{ entry.points > 0 ? '+' : '' }}{{ entry.points }}
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="columns"></tr>
+            <tr mat-row *matRowDef="let row; columns: columns"></tr>
+          </table>
+        </div>
+      } @else {
+        <app-empty-state icon="redeem" titleKey="points.empty"/>
+      }
+    </div>
+  </div>
+</section>
