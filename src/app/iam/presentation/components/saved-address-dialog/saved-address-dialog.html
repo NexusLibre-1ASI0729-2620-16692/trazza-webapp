@@ -1,0 +1,20 @@
+<h2 mat-dialog-title>{{ 'saved-address.add' | translate }}</h2>
+<form [formGroup]="form" (ngSubmit)="save()">
+  <mat-dialog-content>
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'fields.label' | translate }}</mat-label>
+        <input matInput formControlName="label" [placeholder]="'saved-address.label-placeholder' | translate" cdkFocusInitial>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'fields.district' | translate }}</mat-label>
+        <input matInput formControlName="district">
+      </mat-form-field>
+    </div>
+    <app-map-picker [(value)]="place" [label]="'fields.address' | translate" inputId="saved-address-place"/>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>{{ 'actions.cancel' | translate }}</button>
+    <button mat-flat-button type="submit">{{ 'actions.save' | translate }}</button>
+  </mat-dialog-actions>
+</form>
