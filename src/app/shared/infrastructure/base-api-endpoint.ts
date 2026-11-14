@@ -5,7 +5,7 @@ import {BaseEntity, EntityId} from '../domain/model/base-entity';
 import {BaseResource} from './base-response';
 import {BaseAssembler} from './base-assembler';
 import {ErrorHandlingEnabledBaseType} from './error-handling-enabled-base-type';
-import {QueryParams} from './base-api';
+import {QueryParams} from './platform-api';
 
 /** CRUD endpoint of one REST collection. The assembler turns resources into domain entities and back. */
 export class BaseApiEndpoint<
