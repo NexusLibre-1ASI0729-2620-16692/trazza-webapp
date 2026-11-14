@@ -1,18 +1,19 @@
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
-import {BaseEntity} from '../domain/model/base-entity';
-import {BaseResource, BaseResponse} from './base-response';
+import {BaseEntity, EntityId} from '../domain/model/base-entity';
+import {BaseResource} from './base-response';
 import {BaseAssembler} from './base-assembler';
 import {ErrorHandlingEnabledBaseType} from './error-handling-enabled-base-type';
+import {QueryParams} from './base-api';
 
-export abstract class BaseApiEndpoint<
+/** CRUD endpoint of one REST collection. The assembler turns resources into domain entities and back. */
+export class BaseApiEndpoint<
   TEntity extends BaseEntity,
   TResource extends BaseResource,
-  TResponse extends BaseResponse,
-  TAssembler extends BaseAssembler<TEntity, TResource, TResponse>
+  TAssembler extends BaseAssembler<TEntity, TResource>
 > extends ErrorHandlingEnabledBaseType {
-  protected constructor(
+  constructor(
     protected http: HttpClient,
     protected endpointUrl: string,
     protected assembler: TAssembler
@@ -20,17 +21,18 @@ export abstract class BaseApiEndpoint<
     super();
   }
 
-  getAll(filters: Record<string, string | number> = {}): Observable<TEntity[]> {
-    const params = new HttpParams({ fromObject: filters });
-    return this.http.get<TResponse | TResource[]>(this.endpointUrl, { params }).pipe(
-      map(response => Array.isArray(response)
-        ? response.map(resource => this.assembler.toEntityFromResource(resource))
-        : this.assembler.toEntitiesFromResponse(response as TResponse)),
+  getAll(filters: QueryParams = {}): Observable<TEntity[]> {
+    let params = new HttpParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== null && value !== undefined && value !== '') params = params.set(key, String(value));
+    });
+    return this.http.get<TResource[]>(this.endpointUrl, { params }).pipe(
+      map(resources => resources.map(resource => this.assembler.toEntityFromResource(resource))),
       catchError(this.handleError('Failed to fetch entities'))
     );
   }
 
-  getById(id: number): Observable<TEntity> {
+  getById(id: EntityId): Observable<TEntity> {
     return this.http.get<TResource>(`${this.endpointUrl}/${id}`).pipe(
       map(resource => this.assembler.toEntityFromResource(resource)),
       catchError(this.handleError('Failed to fetch entity'))
@@ -38,23 +40,20 @@ export abstract class BaseApiEndpoint<
   }
 
   create(entity: TEntity): Observable<TEntity> {
-    const { id, ...resource } = this.assembler.toResourceFromEntity(entity);
-    const payload = id ? { id, ...resource } : resource;
-    return this.http.post<TResource>(this.endpointUrl, payload).pipe(
+    return this.http.post<TResource>(this.endpointUrl, this.assembler.toResourceFromEntity(entity)).pipe(
       map(created => this.assembler.toEntityFromResource(created)),
       catchError(this.handleError('Failed to create entity'))
     );
   }
 
-  update(entity: TEntity, id: number): Observable<TEntity> {
-    const resource = this.assembler.toResourceFromEntity(entity);
-    return this.http.put<TResource>(`${this.endpointUrl}/${id}`, resource).pipe(
+  update(entity: TEntity, id: EntityId): Observable<TEntity> {
+    return this.http.put<TResource>(`${this.endpointUrl}/${id}`, this.assembler.toResourceFromEntity(entity)).pipe(
       map(updated => this.assembler.toEntityFromResource(updated)),
       catchError(this.handleError('Failed to update entity'))
     );
   }
 
-  delete(id: number): Observable<void> {
+  delete(id: EntityId): Observable<void> {
     return this.http.delete<void>(`${this.endpointUrl}/${id}`).pipe(
       catchError(this.handleError('Failed to delete entity'))
     );
