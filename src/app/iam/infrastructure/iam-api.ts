@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {environment} from '../../../environments/environment';
-import {BaseApi} from '../../shared/infrastructure/base-api';
+import {PlatformApi} from '../../shared/infrastructure/platform-api';
 import {BaseApiEndpoint} from '../../shared/infrastructure/base-api-endpoint';
 import {AccountResource, AuthenticatedSessionResource, IdentityVerificationResource} from './iam-resources';
 import {DriverAssembler, SavedAddressAssembler, VehicleAssembler} from './fleet.assemblers';
@@ -15,7 +15,7 @@ import {SignUpCommand, MerchantData} from '../domain/commands/sign-up.command';
 import {SignInCommand} from '../domain/commands/sign-in.command';
 
 @Injectable({providedIn: 'root'})
-export class IamApi extends BaseApi {
+export class IamApi extends PlatformApi {
   static readonly AUTHENTICATION_PATH = environment.authenticationEndpointPath;
   static readonly USERS_PATH = '/users/me';
 

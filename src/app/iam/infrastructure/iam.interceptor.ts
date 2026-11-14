@@ -18,10 +18,10 @@ const withSession = (request: HttpRequest<unknown>, token: string | null): HttpR
  * session once and repeats the call; if the refresh fails too, the local session is cleared.
  */
 export const iamInterceptor: HttpInterceptorFn = (request, next) => {
-  if (!request.url.startsWith(environment.platformApiUrl)) return next(request);
+  if (!request.url.startsWith(environment.platformProviderApiBaseUrl)) return next(request);
   const storage = inject(SessionTokenStorage);
   const refresher = inject(SessionRefresher);
-  const isAuthenticationCall = request.url.startsWith(`${environment.platformApiUrl}${environment.authenticationEndpointPath}/`);
+  const isAuthenticationCall = request.url.startsWith(`${environment.platformProviderApiBaseUrl}${environment.authenticationEndpointPath}/`);
 
   return next(withSession(request, storage.accessToken)).pipe(
     catchError((error: unknown) => {

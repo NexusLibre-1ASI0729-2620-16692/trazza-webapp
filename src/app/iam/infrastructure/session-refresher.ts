@@ -20,7 +20,7 @@ export class SessionRefresher {
     const refreshToken = this.storage.refreshToken;
     if (!refreshToken) return throwError(() => new Error('errors.session-expired'));
     this.inFlight ??= this.http
-      .post<AuthenticatedSessionResource>(`${environment.platformApiUrl}${environment.authenticationEndpointPath}/refresh`, { refreshToken })
+      .post<AuthenticatedSessionResource>(`${environment.platformProviderApiBaseUrl}${environment.authenticationEndpointPath}/refresh`, { refreshToken })
       .pipe(
         tap(session => this.storage.save(session)),
         map(session => session.accessToken),
