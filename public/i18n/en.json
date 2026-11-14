@@ -17,7 +17,12 @@
     "freight-requests": "Freight Requests",
     "find-carriers": "Find Carriers",
     "shipment-tracking": "Shipment Tracking",
-    "shipment-history": "Shipment History"
+    "shipment-history": "Shipment History",
+    "iot-devices": "IoT devices",
+    "open-shipments": "Open shipments",
+    "proposals": "Offers",
+    "shipment-requests": "My shipments",
+    "trips": "Trips"
   },
   "menu": {
     "carrier-account": "Carrier account",
@@ -53,7 +58,8 @@
     "save-changes": "Save changes",
     "send": "Send",
     "show-password": "Show password",
-    "hide-password": "Hide password"
+    "hide-password": "Hide password",
+    "open": "Open"
   },
   "messages": {
     "done": "Done"
@@ -61,7 +67,9 @@
   "errors": {
     "title": "Something went wrong",
     "network": "We could not reach the Trazza server. Check that the mock API is running.",
-    "unexpected": "An unexpected error occurred. Please try again."
+    "unexpected": "An unexpected error occurred. Please try again.",
+    "geolocation-denied": "Location permission was denied.",
+    "geolocation-unavailable": "This browser cannot share its location."
   },
   "alerts": {
     "offers-waiting": "You have {{ count }} offer(s) waiting for your answer",
@@ -105,7 +113,19 @@
     "card-number": "Card number",
     "card-holder": "Card holder",
     "expiry": "Expiry",
-    "receipt-type": "Receipt"
+    "receipt-type": "Receipt",
+    "delivery": "Delivery",
+    "departure": "Departure",
+    "destination": "Destination",
+    "driver": "Driver",
+    "max-shipments": "Shipments per trip",
+    "origin": "Origin",
+    "pickup": "Pick-up",
+    "pickup-from": "Pick-up from",
+    "pickup-until": "Pick-up until",
+    "reason": "Reason",
+    "serial-number": "Serial number",
+    "type": "Type"
   },
   "columns": {
     "trip": "Trip",
@@ -129,7 +149,12 @@
     "suggestions": "Suggestions",
     "vehicle": "Vehicle",
     "weight": "Weight",
-    "pagination": "Pagination"
+    "pagination": "Pagination",
+    "cargo": "Cargo",
+    "counterpart": "Counterpart",
+    "departure": "Departure",
+    "shipment": "Shipment",
+    "slots": "Slots"
   },
   "filters": {
     "all-statuses": "All statuses",
@@ -166,7 +191,25 @@
     "in_transit": "In transit",
     "delivered": "Delivered",
     "paid": "Paid",
-    "failed": "Failed"
+    "failed": "Failed",
+    "available": "Available",
+    "completed": "Completed",
+    "confirmed": "Confirmed",
+    "expired": "Expired",
+    "full": "Full",
+    "in-progress": "In progress",
+    "in-review": "In review",
+    "in-transit": "In transit",
+    "inactive": "Inactive",
+    "loaned": "Loaned",
+    "maintenance": "Maintenance",
+    "picked-up": "Picked up",
+    "published": "Published",
+    "resolved": "Resolved",
+    "retired": "Retired",
+    "scheduled": "Scheduled",
+    "submitted": "Submitted",
+    "validated": "Validated"
   },
   "cargo-types": {
     "general": "General",
@@ -280,7 +323,13 @@
     "close": "Close route",
     "confirm-close": "Close the route {{ route }}? Open offers will be closed too.",
     "view-suggestions": "View suggestions",
-    "empty": "You have not published return routes yet."
+    "empty": "You have not published return routes yet.",
+    "cancel": "Cancel route",
+    "cancelled": "Route cancelled.",
+    "confirm-cancel": "Cancel the route {{route}}?",
+    "free": "free",
+    "max-shipments-hint": "A truck carries at most 2 shipments per trip.",
+    "no-driver": "No driver assigned"
   },
   "load-suggestions": {
     "title": "Load suggestions",
@@ -333,7 +382,14 @@
       "matched": "Match confirmed with {{ merchant }}. Check your active trip.",
       "rejected": "The offer was rejected.",
       "closed": "This offer was closed."
-    }
+    },
+    "choose-route": "Choose one of your open routes",
+    "make": "Make offer",
+    "rate": "Your rate",
+    "route": "Route",
+    "send": "Send offer",
+    "single-offer-hint": "You can make a single offer. The merchant accepts or rejects it, there are no counter-offers.",
+    "title": "Offer for this shipment"
   },
   "offers": {
     "title": "Offers",
@@ -404,7 +460,31 @@
     "far-hint": "Confirm only if the merchant's customer already received the goods.",
     "confirm-anyway": "Confirm anyway",
     "no-active": "You have no active trips",
-    "no-active-hint": "Accept a load suggestion to start a trip."
+    "no-active-hint": "Accept a load suggestion to start a trip.",
+    "acknowledge": "Acknowledge",
+    "actions": {
+      "cancel": "Cancel trip",
+      "confirm": "Confirm reception",
+      "deliver": "Mark delivered",
+      "pick-up": "Cargo picked up"
+    },
+    "detail-title": "Trip",
+    "deviation": "The truck is {{km}} km off the planned path ({{time}}).",
+    "distance": "Distance",
+    "done": {
+      "cancel": "Trip cancelled."
+    },
+    "driver-assigned": "Driver assigned.",
+    "empty": "No trips here.",
+    "filter-active": "Active",
+    "filter-all": "All",
+    "filter-closed": "Closed",
+    "history": "Status history",
+    "list-subtitle": "Trips agreed from accepted offers.",
+    "list-title": "Trips",
+    "lost-profit-warning": "The departure time has passed: cancelling now creates a 30% lost-profit compensation for the carrier.",
+    "open-alerts": "{{count}} open alerts",
+    "stop-sharing": "Stop sharing"
   },
   "tracking": {
     "heading": "Shipment {{ code }}",
@@ -459,7 +539,16 @@
     "description-placeholder": "e.g. 2 bales arrived wet.",
     "window-hint": "You can report up to 48 h after delivery. Trazza support will contact both parties.",
     "send": "Send report",
-    "sent": "Incident reported. Trazza support will contact both parties."
+    "sent": "Incident reported. Trazza support will contact both parties.",
+    "add-evidence": "Add evidence",
+    "empty": "No incidents.",
+    "evidence-placeholder": "File key (e.g. incidents/photo-1.jpg)",
+    "report": "Report incident",
+    "reported": "Incident reported.",
+    "resolution": "Resolution",
+    "resolution-placeholder": "How was it solved?",
+    "resolve": "Resolve",
+    "resolved": "Incident resolved."
   },
   "history": {
     "trip-title": "Trip history",
@@ -483,7 +572,8 @@
     "rate-merchant": "Rate the merchant",
     "rate-carrier": "Rate the carrier",
     "score": "Score",
-    "tags": "What stood out"
+    "tags": "What stood out",
+    "rate": "Rate {{name}}"
   },
   "reputation": {
     "title": "Ratings",
@@ -495,7 +585,6 @@
     "average-of": "{{ average }} ({{ count }} ratings)",
     "empty": "There are no ratings yet."
   },
-
   "plan": {
     "choose-trucks": "Trucks",
     "includes-iot": "Includes IoT device",
@@ -554,7 +643,6 @@
     "title": "Lost-profit compensations",
     "waive": "Waive"
   },
-
   "billing": {
     "title": "Plan & Billing",
     "subtitle": "Trazza charges only its own subscription. Freight rates are agreed between carrier and merchant, with no commission.",
@@ -625,7 +713,19 @@
     "carrier-empty": "Publish a return route to receive load suggestions on your way back.",
     "merchant-empty": "Publish a freight request to receive offers from carriers on your route.",
     "new-suggestions": "New load suggestions",
-    "recent-requests": "Recent requests"
+    "recent-requests": "Recent requests",
+    "active-trips": "Active trips",
+    "alerts": "You have {{count}} open deviation alerts.",
+    "greeting": "Hi, {{name}}",
+    "kyc-pending": "Your identity is not validated yet. Validate it to publish and accept trips.",
+    "my-open-shipments": "My open shipments",
+    "offers-received": "Offers to answer",
+    "open-routes": "Open routes",
+    "open-shipments": "Shipments looking for a truck",
+    "pending-proposals": "Pending offers",
+    "points": "Loyalty points",
+    "subtitle-carrier": "Fill your empty return trips with cargo.",
+    "subtitle-merchant": "Move your cargo on trucks that are already on the road."
   },
   "page-not-found": {
     "title": "Page not found",
@@ -752,10 +852,188 @@
     "field-required": "This field is required.",
     "field-too-short": "This value is too short.",
     "form-incomplete": "Complete the required fields before continuing.",
-    "number-out-of-range": "The value is out of range."
+    "number-out-of-range": "The value is out of range.",
+    "address-required": "Write the address.",
+    "departure-future": "The departure must be in the future.",
+    "description-required": "Write a description.",
+    "evidence-required": "Write the file key.",
+    "incident-type": "Choose the incident type.",
+    "max-shipments": "A trip carries 1 or 2 shipments.",
+    "pickup-window": "The pick-up end must be after its start.",
+    "pickup-window-past": "The pick-up window already passed.",
+    "point-required": "Mark the point on the map.",
+    "reason-required": "Write the reason.",
+    "resolution-required": "Write the resolution.",
+    "volume-positive": "The volume must be greater than 0.",
+    "weight-positive": "The weight must be greater than 0."
   },
   "languages": {
     "en": "English",
     "es": "Spanish"
+  },
+  "api-errors": {
+    "account-locked": "Too many failed attempts. Try again in 15 minutes.",
+    "address-district-invalid": "The district is not valid.",
+    "address-invalid": "The address is required (up to 255 characters).",
+    "address-label-required": "The address needs a label (for example Home or Warehouse).",
+    "address-street-required": "The address is required.",
+    "alert-not-found": "The deviation alert does not exist.",
+    "authentication-required": "You must sign in.",
+    "business-name-required": "The business name is required.",
+    "business-type-required": "The business type is required.",
+    "cancellation-reason-required": "Tell us why you are cancelling (up to 255 characters).",
+    "capacity-exceeded": "The truck does not have enough free capacity or shipment slots for this cargo.",
+    "capacity-volume-invalid": "The volume is not valid.",
+    "capacity-weight-invalid": "The maximum load must be greater than 0 and up to 30,000 kg.",
+    "cargo-dimensions-invalid": "The cargo dimensions must be greater than 0 and up to 20 m.",
+    "carrier-profile-required": "You need the carrier role to do this.",
+    "carrier-role-required": "You need the carrier role to do this.",
+    "chat-closed": "The chat of this offer is closed.",
+    "comment-invalid": "The comment can have up to 500 characters.",
+    "compensation-not-found": "This trip has no lost profit compensation.",
+    "compensation-settled": "The compensation was already settled.",
+    "currency-invalid": "The currency must be PEN or USD.",
+    "date-time-invalid": "The date and time are not valid.",
+    "departure-must-be-future": "The departure must be in the future.",
+    "description-invalid": "The description is required (up to the allowed length).",
+    "dni-already-registered": "This DNI is already registered.",
+    "dni-invalid": "The DNI must have 8 digits.",
+    "driver-inactive": "The driver is inactive.",
+    "driver-not-found": "The driver does not exist.",
+    "email-already-registered": "This email is already registered.",
+    "email-invalid": "The email is not valid.",
+    "experience-stars-invalid": "Experience must be between 1 and 5 stars.",
+    "external-reference-invalid": "The operation number can have up to 100 characters.",
+    "full-name-required": "The full name is required.",
+    "identity-already-validated": "Your identity is already validated.",
+    "identity-not-found": "Your identity data was not found.",
+    "incident-not-found": "The incident does not exist.",
+    "incident-resolved": "The incident is already resolved.",
+    "incident-type-invalid": "The incident type must be DAMAGED, INCOMPLETE, DELAY or OTHER.",
+    "invalid-credentials": "The email or password is incorrect.",
+    "invalid-refresh-token": "Your session expired. Sign in again.",
+    "invalid-request": "The request is not valid.",
+    "iot-device-unavailable": "There are no IoT devices available to lend right now.",
+    "latitude-invalid": "The latitude must be between -90 and 90.",
+    "longitude-invalid": "The longitude must be between -180 and 180.",
+    "max-shipments-invalid": "A route can take 1 or 2 shipments.",
+    "merchant-data-required": "The business data (name, RUC and type) is required for the merchant role.",
+    "merchant-profile-not-found": "You do not have a merchant profile.",
+    "merchant-profile-required": "You need the merchant role to do this.",
+    "message-invalid": "The message must have between 1 and 2,000 characters.",
+    "money-invalid": "The amount is not valid.",
+    "only-carrier": "Only the carrier of the trip can do this.",
+    "only-merchant": "Only the merchant of the trip can do this.",
+    "password-too-short": "The password must have at least 8 characters.",
+    "phone-invalid": "The phone must be a Peruvian mobile number (9 digits starting with 9).",
+    "pickup-window-invalid": "The pick-up window must end after it starts.",
+    "pickup-window-past": "The pick-up window has already ended.",
+    "plan-not-found": "The plan does not exist.",
+    "plan-vehicle-count-invalid": "The number of trucks does not fit the plan (the 6-truck pack needs 5 or 6).",
+    "plate-already-registered": "This plate is already registered.",
+    "plate-invalid": "The plate must look like ABC-123.",
+    "points-insufficient": "You do not have enough points.",
+    "points-invalid": "The points must be greater than 0.",
+    "proposal-already-exists": "You already made an offer for this shipment on this route.",
+    "proposal-not-found": "The offer does not exist.",
+    "proposal-not-pending": "The offer was already answered.",
+    "rate-invalid": "The rate must be greater than 0.",
+    "rating-already-given": "You already rated this trip.",
+    "recorded-at-invalid": "The GPS time cannot be in the future.",
+    "resolution-invalid": "The resolution is required (up to 1,000 characters).",
+    "role-already-granted": "You already have this role.",
+    "role-invalid": "The role must be CARRIER or MERCHANT.",
+    "role-required": "Your account does not have the role needed for this.",
+    "route-closed": "The route is already completed or cancelled.",
+    "route-has-trips": "The route has accepted shipments. Cancel those trips first.",
+    "route-not-accepting": "The route is not taking new shipments.",
+    "route-not-found": "The route does not exist.",
+    "ruc-already-registered": "This RUC is already registered.",
+    "ruc-invalid": "The RUC must have 11 digits and start with 10 or 20.",
+    "s3-key-invalid": "The file key is not valid.",
+    "saved-address-not-found": "The saved address does not exist.",
+    "schedule-incompatible": "The route departure does not fit the pick-up window.",
+    "score-invalid": "The score must be between 1 and 5.",
+    "settlement-not-found": "This trip has no freight settlement yet.",
+    "sex-invalid": "The sex must be F, M or X.",
+    "shipment-not-found": "The shipment does not exist.",
+    "shipment-not-open": "The shipment is no longer open.",
+    "source-invalid": "The source must be PHONE or IOT.",
+    "speed-invalid": "The speed must be between 0 and 300 km/h.",
+    "subscription-cancelled": "The subscription is cancelled.",
+    "subscription-not-found": "The subscription does not exist.",
+    "trip-not-confirmed": "You can rate only confirmed trips.",
+    "trip-not-found": "The trip does not exist.",
+    "trip-not-on-the-road": "GPS points are accepted only after the pick-up and before the delivery.",
+    "trip-status-invalid": "This action is not allowed in the current trip status.",
+    "unexpected-error": "An unexpected error occurred.",
+    "user-not-found": "The user does not exist.",
+    "vehicle-already-subscribed": "One of the trucks already has an active plan.",
+    "vehicle-inactive": "The truck is inactive.",
+    "vehicle-model-required": "The truck model is required.",
+    "vehicle-not-found": "The truck does not exist.",
+    "volume-invalid": "The volume must be greater than 0.",
+    "weight-invalid": "The weight must be greater than 0 and up to 30,000 kg."
+  },
+  "chat": {
+    "closed": "The chat is closed. Messages are deleted when the trip ends.",
+    "empty": "No messages yet. Say hello!",
+    "me": "Me",
+    "placeholder": "Write a message…",
+    "retention-hint": "Messages are deleted when the trip is delivered, confirmed or cancelled.",
+    "send": "Send",
+    "title": "Chat"
+  },
+  "iot": {
+    "empty": "You have no IoT devices. They are loaned with the IoT plan.",
+    "loaned-at": "Loaned on",
+    "subtitle": "Trackers loaned with your subscription.",
+    "title": "IoT devices"
+  },
+  "open-shipments": {
+    "empty": "No open shipments right now.",
+    "need-route": "Publish a return route first to make offers.",
+    "subtitle": "Shipment requests waiting for a truck.",
+    "title": "Open shipments"
+  },
+  "proposal": {
+    "accept": "Accept",
+    "accepted": "Offer accepted. The trip was created.",
+    "cancel": "Withdraw offer",
+    "canceled": "Offer withdrawn.",
+    "confirm-accept": "Accept this offer? A trip is created and the other offers for this shipment are closed.",
+    "confirm-cancel": "Withdraw your offer?",
+    "confirm-reject": "Reject this offer?",
+    "detail-title": "Offer",
+    "empty": "No offers yet.",
+    "go-to-trip": "Go to trip",
+    "list-subtitle-carrier": "Offers you made on shipments.",
+    "list-subtitle-merchant": "Offers carriers made on your shipments.",
+    "list-title": "Offers",
+    "phone-hidden": "The phone number is shown once the offer is accepted.",
+    "reject": "Reject",
+    "rejected": "Offer rejected."
+  },
+  "route-suggestions": {
+    "empty": "No compatible shipments yet. We look 25 km around your path.",
+    "route-not-open": "This route no longer accepts offers.",
+    "subtitle": "Shipments along your path that fit the free capacity.",
+    "title": "Compatible shipments"
+  },
+  "shipment": {
+    "cancel": "Cancel shipment",
+    "cancelled": "Shipment cancelled.",
+    "compatible-routes": "Compatible routes",
+    "compatible-routes-hint": "Routes that pass near your pick-up and delivery points. Carriers make the offer.",
+    "empty": "You have not published shipments yet.",
+    "list-subtitle": "Cargo you need to move.",
+    "list-title": "My shipments",
+    "new-subtitle": "Describe the cargo and mark the exact points on the map.",
+    "new-title": "New shipment",
+    "no-compatible-routes": "No compatible routes right now.",
+    "pickup-window": "Pick-up window",
+    "publish": "Publish shipment",
+    "published": "Shipment published.",
+    "view-routes": "Compatible routes"
   }
 }
