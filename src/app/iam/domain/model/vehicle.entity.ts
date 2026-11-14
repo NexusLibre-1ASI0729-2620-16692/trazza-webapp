@@ -1,47 +1,32 @@
-import { LicensePlate } from './license-plate.value-object';
-import { LoadCapacity } from './load-capacity.value-object';
+import {BaseEntity} from '../../../shared/domain/model/base-entity';
 
-export interface VehicleParams {
-  id?: number | null;
-  plate: LicensePlate;
-  brandModel: string;
-  bodyType: string;
-  capacity: LoadCapacity;
-  active?: boolean;
-}
+/** A truck of the carrier's fleet. The cargo volume is computed by the platform when it is not given. */
+export class Vehicle implements BaseEntity {
+  id: string;
+  plate: string;
+  model: string;
+  maxLoadKg: number;
+  cargoLengthM: number;
+  cargoWidthM: number;
+  cargoHeightM: number;
+  cargoVolumeM3: number | null;
+  photoS3Key: string | null;
+  isActive: boolean;
 
-export class Vehicle {
-  public static readonly BODY_TYPES = ['closed_van', 'flatbed', 'refrigerated', 'box_truck', 'pickup'] as const;
-  private _id: number | null;
-  private _plate: LicensePlate;
-  private _brandModel: string;
-  private _bodyType: string;
-  private _capacity: LoadCapacity;
-  private _active: boolean;
-
-  constructor(params: VehicleParams) {
-    if (!(params.plate instanceof LicensePlate)) throw new Error('validation.plate-invalid');
-    if ((params.brandModel ?? '').trim().length < 2) throw new Error('validation.brand-model-required');
-    if (!Vehicle.BODY_TYPES.includes(params.bodyType as any)) throw new Error('validation.body-type-invalid');
-    if (!(params.capacity instanceof LoadCapacity)) throw new Error('validation.capacity-weight-invalid');
-
-    this._id = params.id ?? null;
-    this._plate = params.plate;
-    this._brandModel = params.brandModel.trim();
-    this._bodyType = params.bodyType;
-    this._capacity = params.capacity;
-    this._active = params.active ?? true;
+  constructor(props: Partial<Vehicle> = {}) {
+    this.id = props.id ?? '';
+    this.plate = props.plate ?? '';
+    this.model = props.model ?? '';
+    this.maxLoadKg = props.maxLoadKg ?? 3000;
+    this.cargoLengthM = props.cargoLengthM ?? 4;
+    this.cargoWidthM = props.cargoWidthM ?? 2;
+    this.cargoHeightM = props.cargoHeightM ?? 2;
+    this.cargoVolumeM3 = props.cargoVolumeM3 ?? null;
+    this.photoS3Key = props.photoS3Key ?? null;
+    this.isActive = props.isActive ?? true;
   }
 
-  get id(): number | null { return this._id; }
-  get plate(): LicensePlate { return this._plate; }
-  get brandModel(): string { return this._brandModel; }
-  get bodyType(): string { return this._bodyType; }
-  get capacity(): LoadCapacity { return this._capacity; }
-  get active(): boolean { return this._active; }
-  get label(): string { return `${this._brandModel} · ${this._plate.value}`; }
-
-  assignId(id: number): void { this._id = id; }
-  activate(): void { this._active = true; }
-  deactivate(): void { this._active = false; }
+  get label(): string {
+    return `${this.plate} · ${this.model}`;
+  }
 }
