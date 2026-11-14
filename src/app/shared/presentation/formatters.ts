@@ -1,21 +1,14 @@
 export type Severity = 'success' | 'info' | 'warn' | 'danger' | 'secondary';
 
 const STATUS_SEVERITIES: Readonly<Record<string, Severity>> = Object.freeze({
-  active: 'success',
-  open: 'info',
-  draft: 'secondary',
-  pending: 'warn',
-  counteroffer: 'warn',
-  accepted: 'info',
-  matched: 'success',
-  rejected: 'danger',
-  closed: 'secondary',
-  cancelled: 'danger',
-  picked_up: 'info',
-  in_transit: 'info',
-  delivered: 'success',
-  paid: 'success',
-  failed: 'danger'
+  PUBLISHED: 'info', FULL: 'warn', IN_PROGRESS: 'info', COMPLETED: 'success',
+  OPEN: 'info', MATCHED: 'success', IN_TRANSIT: 'info', DELIVERED: 'success', CANCELLED: 'danger',
+  PENDING: 'warn', ACCEPTED: 'success', REJECTED: 'danger', EXPIRED: 'secondary',
+  SCHEDULED: 'secondary', PICKED_UP: 'info', CONFIRMED: 'success',
+  IN_REVIEW: 'warn', RESOLVED: 'success',
+  ACTIVE: 'success', INACTIVE: 'secondary', PAST_DUE: 'warn', PAID: 'success', FAILED: 'danger', REFUNDED: 'secondary',
+  MARKED_PAID: 'info', SETTLED: 'success', PAID_EXTERNALLY: 'success', WAIVED: 'secondary', DISPUTED: 'danger',
+  VALIDATED: 'success', SUBMITTED: 'warn', AVAILABLE: 'success', LOANED: 'info', NOT_SUBMITTED: 'secondary'
 });
 
 const localeOf = (language: string | null | undefined): string => language === 'es' ? 'es-PE' : 'en-GB';
@@ -62,7 +55,7 @@ export const initialsOf = (name: string | null | undefined): string => (name ?? 
 /** IN_TRANSIT becomes in-transit, the suffix of the statuses.* translation keys. */
 export const statusKey = (status: string | null | undefined): string => (status ?? '').toLowerCase().replaceAll('_', '-');
 
-export const statusSeverity = (status: string): Severity => STATUS_SEVERITIES[status] ?? 'secondary';
+export const statusSeverity = (status: string | null | undefined): Severity => STATUS_SEVERITIES[status ?? ''] ?? 'secondary';
 
 export const halfHourSlots = (fromHour = 6, toHour = 22): string[] => {
   const slots: string[] = [];
