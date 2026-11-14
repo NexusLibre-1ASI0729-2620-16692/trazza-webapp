@@ -1,0 +1,95 @@
+<section class="trazza-page">
+  <header class="trazza-page-header">
+    <div>
+      <h1>{{ 'trip.detail-title' | translate }}</h1>
+    </div>
+    <a mat-button routerLink="/execution/trips"><mat-icon>arrow_back</mat-icon>{{ 'actions.back' | translate }}</a>
+  </header>
+  @if (trip(); as trip) {
+    <div class="trazza-grid">
+      <div class="span-8-lg stack">
+        @for (alert of openAlerts(); track alert.id) {
+          <div class="trazza-message alert-message row-between wrap" role="alert">
+            <span>{{ 'trip.deviation' | translate: { km: (alert.deviationKm | trazzaNumber), time: (alert.detectedAt | trazzaDateTime: locale.language()) } }}</span>
+            <button mat-stroked-button type="button" class="warn-button" (click)="acknowledge(alert)">{{ 'trip.acknowledge' | translate }}</button>
+          </div>
+        }
+        <article class="trazza-panel"><app-route-map [stops]="stops()" [track]="track()" [alerts]="alerts()" height="24rem"/></article>
+        <article class="trazza-panel">
+          <h2 class="text-lg mt-0">{{ 'trip.history' | translate }}</h2>
+          <ol class="timeline">
+            @for (change of history(); track change.changedAt + change.toStatus) {
+              <li>
+                <span class="semibold">{{ 'statuses.' + key(change.toStatus) | translate }}</span>
+                <span class="text-sm trazza-muted">{{ change.changedAt | trazzaDateTime: locale.language() }}</span>
+              </li>
+            }
+          </ol>
+        </article>
+      </div>
+      <div class="span-4-lg stack">
+        <article class="trazza-panel stack">
+          <div class="row-between">
+            <span class="trazza-kpi">{{ trip.agreedRate | trazzaMoney: trip.currency }}</span>
+            <app-status-tag [status]="trip.status"/>
+          </div>
+          <div class="trazza-route">{{ trip.label }}</div>
+          <div class="text-sm trazza-muted">{{ trip.description }} · {{ trip.weightKg | trazzaNumber }} kg · {{ trip.volumeM3 | trazzaNumber }} m³</div>
+          <div class="text-sm">{{ 'columns.departure' | translate }}: {{ trip.departureAt | trazzaDateTime: locale.language() }}</div>
+          <div class="text-sm">{{ 'fields.vehicle' | translate }}: {{ trip.vehicle.plate }}</div>
+          <div class="text-sm">
+            <span class="semibold">{{ (trip.isCarrier ? 'roles.merchant' : 'roles.carrier') | translate }}:</span> {{ trip.counterpart.name }}
+            @if (trip.counterpart.phone) {
+              · {{ trip.counterpart.phone }}
+            }
+          </div>
+          @if (trip.canAssignDriver) {
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>{{ 'fields.driver' | translate }}</mat-label>
+              <mat-select [value]="trip.driverId" (selectionChange)="assignDriver($event.value)">
+                <mat-option [value]="null">{{ 'return-route.no-driver' | translate }}</mat-option>
+                @for (driver of fleet.activeDrivers(); track driver.id) {
+                  <mat-option [value]="driver.id">{{ driver.fullName }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          } @else {
+            <div class="text-sm"><span class="semibold">{{ 'fields.driver' | translate }}:</span> {{ trip.driverName ?? ('return-route.no-driver' | translate) }}</div>
+          }
+          @if (trip.totalDistanceKm) {
+            <div class="text-sm">{{ 'trip.distance' | translate }}: {{ trip.totalDistanceKm | trazzaNumber }} km</div>
+          }
+          @if (trip.cancellationReason) {
+            <div class="text-sm"><span class="semibold">{{ 'fields.reason' | translate }}:</span> {{ trip.cancellationReason }}</div>
+          }
+          <div class="stack mt-2">
+            @if (trip.canPickUp) {
+              <button mat-flat-button type="button" [disabled]="busy()" (click)="ask('pick-up')"><mat-icon>inventory_2</mat-icon>{{ 'trip.actions.pick-up' | translate }}</button>
+            }
+            @if (trip.canTrack) {
+              <button mat-stroked-button type="button" (click)="toggleSharing()">
+                <mat-icon>{{ sharing() ? 'pause' : 'my_location' }}</mat-icon>{{ (sharing() ? 'trip.stop-sharing' : 'trip.share-location') | translate }}
+              </button>
+            }
+            @if (trip.canDeliver) {
+              <button mat-flat-button type="button" [disabled]="busy()" (click)="ask('deliver')"><mat-icon>check</mat-icon>{{ 'trip.actions.deliver' | translate }}</button>
+            }
+            @if (trip.canConfirm) {
+              <button mat-flat-button type="button" [disabled]="busy()" (click)="ask('confirm')"><mat-icon>verified</mat-icon>{{ 'trip.actions.confirm' | translate }}</button>
+            }
+            @if (canRate()) {
+              <button mat-stroked-button type="button" (click)="rate()"><mat-icon>star</mat-icon>{{ 'rating.rate' | translate: { name: trip.counterpart.name } }}</button>
+            }
+            @if (trip.hasSettlement) {
+              <a mat-button routerLink="/billing/settlements"><mat-icon>account_balance_wallet</mat-icon>{{ 'option.settlements' | translate }}</a>
+            }
+            @if (trip.canCancel) {
+              <button mat-button type="button" class="danger-text" (click)="cancel()"><mat-icon>close</mat-icon>{{ 'trip.actions.cancel' | translate }}</button>
+            }
+          </div>
+        </article>
+        <app-incident-panel [tripId]="trip.id" [canReport]="!trip.isClosed || trip.status === 'CONFIRMED'"/>
+      </div>
+    </div>
+  }
+</section>

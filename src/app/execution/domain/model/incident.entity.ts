@@ -1,146 +1,41 @@
-import {IncidentType} from './incident-type.value-object';
+import {BaseEntity} from '../../../shared/domain/model/base-entity';
 
-export type ReporterRole =
-  'carrier' | 'merchant';
+export type IncidentType = 'DAMAGED' | 'INCOMPLETE' | 'DELAY' | 'OTHER';
 
-export type IncidentStatus =
-  'open' | 'resolved';
-
-export interface IncidentParams {
-  id?: number | null;
-  type: IncidentType;
-  description: string;
-  reporterId: number;
-  reporterRole: ReporterRole;
-  reportedAt?: string;
-  status?: IncidentStatus;
+export interface Evidence {
+  id: number;
+  s3Key: string;
+  uploadedAt: string;
 }
 
-export class Incident {
-  static readonly MIN_DESCRIPTION_LENGTH = 10;
-  static readonly MAX_DESCRIPTION_LENGTH = 500;
+/** A problem reported on a trip (damaged or incomplete cargo, delay...). Evidence files are referenced by key. */
+export class Incident implements BaseEntity {
+  static readonly TYPES: readonly IncidentType[] = Object.freeze(['DAMAGED', 'INCOMPLETE', 'DELAY', 'OTHER'] as IncidentType[]);
 
-  #id: number | null;
-  readonly #type: IncidentType;
-  readonly #description: string;
-  readonly #reporterId: number;
-  readonly #reporterRole: ReporterRole;
-  readonly #reportedAt: string;
-  #status: IncidentStatus;
+  id: number;
+  type: IncidentType;
+  description: string;
+  status: string;
+  resolution: string | null;
+  reportedAt: string;
+  resolvedAt: string | null;
+  evidences: Evidence[];
 
-  constructor({
-                id = null,
-                type,
-                description,
-                reporterId,
-                reporterRole,
-                reportedAt,
-                status = 'open'
-              }: IncidentParams) {
-
-    if (!(type instanceof IncidentType)) {
-      throw new Error(
-        'validation.incident-type-invalid'
-      );
-    }
-
-    const text = (description ?? '').trim();
-
-    if (
-      text.length <
-      Incident.MIN_DESCRIPTION_LENGTH
-    ) {
-      throw new Error(
-        'validation.incident-description-short'
-      );
-    }
-
-    if (
-      text.length >
-      Incident.MAX_DESCRIPTION_LENGTH
-    ) {
-      throw new Error(
-        'validation.description-too-long'
-      );
-    }
-
-    if (
-      reporterId === null ||
-      reporterId === undefined
-    ) {
-      throw new Error(
-        'validation.user-required'
-      );
-    }
-
-    if (
-      !['carrier', 'merchant']
-        .includes(reporterRole)
-    ) {
-      throw new Error(
-        'validation.party-invalid'
-      );
-    }
-
-    if (
-      !['open', 'resolved']
-        .includes(status)
-    ) {
-      throw new Error(
-        'validation.status-invalid'
-      );
-    }
-
-    this.#id = id;
-    this.#type = type;
-    this.#description = text;
-    this.#reporterId = reporterId;
-    this.#reporterRole = reporterRole;
-    this.#reportedAt =
-      reportedAt ??
-      new Date().toISOString();
-    this.#status = status;
+  constructor(props: {
+    id: number; type: IncidentType; description: string; status: string; resolution?: string | null; reportedAt: string;
+    resolvedAt?: string | null; evidences?: Evidence[];
+  }) {
+    this.id = props.id;
+    this.type = props.type;
+    this.description = props.description;
+    this.status = props.status;
+    this.resolution = props.resolution ?? null;
+    this.reportedAt = props.reportedAt;
+    this.resolvedAt = props.resolvedAt ?? null;
+    this.evidences = [...(props.evidences ?? [])];
   }
 
-  get id(): number | null {
-    return this.#id;
-  }
-
-  get type(): IncidentType {
-    return this.#type;
-  }
-
-  get description(): string {
-    return this.#description;
-  }
-
-  get reporterId(): number {
-    return this.#reporterId;
-  }
-
-  get reporterRole(): ReporterRole {
-    return this.#reporterRole;
-  }
-
-  get reportedAt(): string {
-    return this.#reportedAt;
-  }
-
-  get status(): IncidentStatus {
-    return this.#status;
-  }
-
-  assignId(id: number): void {
-    this.#id = id;
-  }
-
-  resolve(): void {
-    if (this.#status === 'resolved') {
-      throw new Error(
-        'validation.incident-already-resolved'
-      );
-    }
-
-    this.#status = 'resolved';
+  get isResolved(): boolean {
+    return this.status === 'RESOLVED';
   }
 }
