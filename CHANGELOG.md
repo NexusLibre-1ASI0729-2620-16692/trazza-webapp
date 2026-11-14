@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-11-14
+
+### Changed
+- Matchmaking, execution, billing, reputation and IAM now consume the Trazza Platform API (Spring Boot, DDD) instead of the json-server mock: new stores, entities, assemblers, views and dialogs for each bounded context.
+- Dashboard and layout load their data from the new stores.
+- Shared kernel updated: `PlatformApi`, `ApiError`, `FeedbackService.attempt`, base assembler and endpoint, and status tags that use the API statuses.
+
+### Added
+- Leaflet map components (`MapPicker`, `RouteMap`), `Polling`, `StarRating`, `PromptDialog` and the date-time and money pipes.
+- Loyalty points, drivers and saved addresses, subscriptions and settlements, IoT devices and the incident panel.
+- English and Spanish labels for matchmaking and execution, and translated API error messages.
+
 ## [1.0.0] - 2026-10-06
 
 ### Added
