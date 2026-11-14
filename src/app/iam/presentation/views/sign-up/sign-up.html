@@ -1,0 +1,62 @@
+<section class="trazza-panel auth-card">
+  <h1 class="mt-0 mb-1">{{ 'sign-up.title' | translate }}</h1>
+  <p class="trazza-muted mt-0 mb-3">{{ 'sign-up.subtitle' | translate }}</p>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <fieldset class="roles mb-2">
+      <legend class="semibold text-sm mb-1">{{ 'sign-up.roles' | translate }}</legend>
+      <div class="row wrap">
+        @for (role of allRoles; track role) {
+          <mat-checkbox [checked]="roles().includes(role)" (change)="toggleRole(role, $event.checked)">
+            {{ 'roles.' + role.toLowerCase() | translate }}
+          </mat-checkbox>
+        }
+      </div>
+      <small class="trazza-muted text-sm">{{ 'sign-up.roles-hint' | translate }}</small>
+    </fieldset>
+    <div class="form-grid">
+      <mat-form-field appearance="outline" class="full-row">
+        <mat-label>{{ 'fields.full-name' | translate }}</mat-label>
+        <input matInput formControlName="fullName" autocomplete="name">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'fields.dni' | translate }}</mat-label>
+        <input matInput formControlName="dni" maxlength="8" inputmode="numeric">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'fields.phone' | translate }}</mat-label>
+        <input matInput formControlName="phone" inputmode="tel" autocomplete="tel">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'fields.email' | translate }}</mat-label>
+        <input matInput type="email" formControlName="email" autocomplete="username">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'fields.password' | translate }}</mat-label>
+        <input matInput type="password" formControlName="password" autocomplete="new-password">
+      </mat-form-field>
+    </div>
+    @if (needsBusiness()) {
+      <div class="trazza-overline mt-2 mb-2">{{ 'sign-up.business' | translate }}</div>
+      <div class="form-grid">
+        <mat-form-field appearance="outline" class="full-row">
+          <mat-label>{{ 'fields.business-name' | translate }}</mat-label>
+          <input matInput formControlName="businessName">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'fields.ruc' | translate }}</mat-label>
+          <input matInput formControlName="ruc" maxlength="11" inputmode="numeric">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'fields.business-type' | translate }}</mat-label>
+          <input matInput formControlName="businessType">
+        </mat-form-field>
+      </div>
+    }
+    <p class="text-sm trazza-muted">{{ 'sign-up.privacy' | translate }}</p>
+    <button mat-flat-button type="submit" class="full-width" [disabled]="store.processing()">{{ 'sign-up.submit' | translate }}</button>
+  </form>
+  <p class="mt-3 mb-0 center">
+    {{ 'sign-up.have-account' | translate }}
+    <a routerLink="/iam/sign-in" class="semibold">{{ 'sign-in.submit' | translate }}</a>
+  </p>
+</section>
