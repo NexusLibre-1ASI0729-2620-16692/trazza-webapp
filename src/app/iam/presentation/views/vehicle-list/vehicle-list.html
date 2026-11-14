@@ -1,0 +1,48 @@
+<section class="trazza-page">
+  <header class="trazza-page-header">
+    <div>
+      <h1>{{ 'vehicle.title' | translate }}</h1>
+      <p>{{ 'vehicle.subtitle' | translate }}</p>
+    </div>
+    <button mat-flat-button type="button" (click)="open()"><mat-icon>add</mat-icon>{{ 'vehicle.add' | translate }}</button>
+  </header>
+  @if (store.vehicles().length) {
+    <div class="trazza-panel table-panel">
+      <table mat-table [dataSource]="store.vehicles()">
+        <ng-container matColumnDef="plate">
+          <th mat-header-cell *matHeaderCellDef>{{ 'fields.plate' | translate }}</th>
+          <td mat-cell *matCellDef="let vehicle" class="semibold">{{ vehicle.plate }}</td>
+        </ng-container>
+        <ng-container matColumnDef="model">
+          <th mat-header-cell *matHeaderCellDef>{{ 'fields.model' | translate }}</th>
+          <td mat-cell *matCellDef="let vehicle">{{ vehicle.model }}</td>
+        </ng-container>
+        <ng-container matColumnDef="maxLoad">
+          <th mat-header-cell *matHeaderCellDef>{{ 'fields.max-load' | translate }}</th>
+          <td mat-cell *matCellDef="let vehicle">{{ vehicle.maxLoadKg | trazzaNumber }} kg</td>
+        </ng-container>
+        <ng-container matColumnDef="volume">
+          <th mat-header-cell *matHeaderCellDef>{{ 'fields.volume' | translate }}</th>
+          <td mat-cell *matCellDef="let vehicle">{{ vehicle.cargoVolumeM3 | trazzaNumber }} m³</td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>{{ 'columns.status' | translate }}</th>
+          <td mat-cell *matCellDef="let vehicle"><app-status-tag [status]="vehicle.isActive ? 'ACTIVE' : 'INACTIVE'"/></td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>{{ 'columns.actions' | translate }}</th>
+          <td mat-cell *matCellDef="let vehicle">
+            <button mat-icon-button type="button" [attr.aria-label]="'actions.edit' | translate" (click)="open(vehicle)"><mat-icon>edit</mat-icon></button>
+            @if (vehicle.isActive) {
+              <button mat-icon-button type="button" [attr.aria-label]="'vehicle.deactivate' | translate" (click)="deactivate(vehicle)"><mat-icon>block</mat-icon></button>
+            }
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      </table>
+    </div>
+  } @else {
+    <app-empty-state icon="local_shipping" titleKey="vehicle.empty"/>
+  }
+</section>
