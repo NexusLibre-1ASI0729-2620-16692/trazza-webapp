@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>{{ (driver.id ? 'driver.edit' : 'driver.add') | translate }}</h2>
+<form [formGroup]="form" (ngSubmit)="save()">
+  <mat-dialog-content>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'fields.full-name' | translate }}</mat-label>
+      <input matInput formControlName="fullName" cdkFocusInitial>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'fields.sex' | translate }}</mat-label>
+      <mat-select formControlName="sex">
+        @for (option of sexOptions; track option.key) {
+          <mat-option [value]="option.value">{{ option.key | translate }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <div class="stack">
+      <span class="semibold text-sm">{{ 'fields.experience' | translate }}</span>
+      <app-star-rating [readonly]="false" [(value)]="stars" [label]="'fields.experience' | translate"/>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>{{ 'actions.cancel' | translate }}</button>
+    <button mat-flat-button type="submit">{{ 'actions.save' | translate }}</button>
+  </mat-dialog-actions>
+</form>

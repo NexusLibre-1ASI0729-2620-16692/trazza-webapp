@@ -1,111 +1,114 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
-import { User } from '../domain/model/user.entity';
-import { Phone } from '../domain/model/phone.value-object';
-import { SignInCommand } from '../domain/commands/sign-in.command';
-import { SignUpCommand } from '../domain/commands/sign-up.command';
-import { IamApi } from '../infrastructure/iam-api.service';
-import { UserAssembler } from '../infrastructure/user-assembler';
-import { SESSION_TOKEN_KEY } from '../infrastructure/iam.interceptor';
+import {computed, inject, Injectable, signal} from '@angular/core';
+import {firstValueFrom} from 'rxjs';
+import {IamApi} from '../infrastructure/iam-api';
+import {SessionTokenStorage} from '../infrastructure/session-token.storage';
+import {UserAssembler} from '../infrastructure/user.assembler';
+import {User} from '../domain/model/user.entity';
+import {UserRole} from '../domain/model/user-role.value-object';
+import {IdentityVerification} from '../domain/model/identity-verification.entity';
+import {SignInCommand} from '../domain/commands/sign-in.command';
+import {MerchantData, SignUpCommand} from '../domain/commands/sign-up.command';
 
-const SESSION_USER_KEY = 'trazza.session.user';
-
-@Injectable({ providedIn: 'root' })
+/**
+ * Session and account of the signed in user. A user can hold both roles; the active role decides which menu,
+ * dashboard and screens the app shows.
+ */
+@Injectable({providedIn: 'root'})
 export class IamStore {
   private readonly iamApi = inject(IamApi);
+  private readonly storage = inject(SessionTokenStorage);
 
-  // State
-  private readonly _currentUser = signal<User | null>(null);
-  private readonly _processing = signal<boolean>(false);
-  private readonly _errors = signal<Error[]>([]);
+  private readonly selectedRole = signal<string | null>(this.storage.activeRole);
+  private readonly verificationsSignal = signal<IdentityVerification[]>([]);
+  private readonly processingSignal = signal(false);
 
-  // Selectors
-  readonly currentUser = this._currentUser.asReadonly();
-  readonly processing = this._processing.asReadonly();
-  readonly errors = this._errors.asReadonly();
+  readonly currentUser = computed<User | null>(() => {
+    const account = this.storage.account();
+    return account ? UserAssembler.toEntityFromResource(account) : null;
+  });
+  readonly isSignedIn = computed(() => this.currentUser() !== null);
+  readonly roles = computed<UserRole[]>(() => this.currentUser()?.roles ?? []);
+  readonly activeRole = computed<UserRole | null>(() => {
+    const user = this.currentUser();
+    if (!user) return null;
+    const selected = this.selectedRole();
+    return user.hasRole(selected) ? selected as UserRole : user.roles[0] ?? null;
+  });
+  readonly isCarrier = computed(() => this.activeRole() === UserRole.CARRIER);
+  readonly isMerchant = computed(() => this.activeRole() === UserRole.MERCHANT);
+  readonly verifications = this.verificationsSignal.asReadonly();
+  readonly processing = this.processingSignal.asReadonly();
 
-  readonly isSignedIn = computed(() => this._currentUser() !== null);
-  readonly currentRole = computed(() => this._currentUser()?.role.value ?? null);
-  readonly currentUserId = computed(() => this._currentUser()?.id ?? null);
-  readonly isCarrier = computed(() => this.currentRole() === 'carrier');
-  readonly isMerchant = computed(() => this.currentRole() === 'merchant');
-
-  constructor() {
-    this.restoreSession();
+  async signIn(command: SignInCommand): Promise<User | null> {
+    return this.run(async () => {
+      this.storage.save(await firstValueFrom(this.iamApi.signIn(command)));
+      return this.currentUser();
+    });
   }
 
-  private startSession(user: User): void {
-    this._currentUser.set(user);
-    localStorage.setItem(SESSION_TOKEN_KEY, btoa(`${user.id}:${user.email.value}:${Date.now()}`));
-    localStorage.setItem(SESSION_USER_KEY, JSON.stringify(UserAssembler.toResourceFromEntity(user)));
+  async signUp(command: SignUpCommand): Promise<User | null> {
+    return this.run(async () => {
+      this.storage.save(await firstValueFrom(this.iamApi.signUp(command)));
+      this.switchRole(command.roles[0]);
+      return this.currentUser();
+    });
   }
 
-  private restoreSession(): void {
-    const serializedUser = localStorage.getItem(SESSION_USER_KEY);
-    if (!serializedUser || !localStorage.getItem(SESSION_TOKEN_KEY)) return;
+  async signOut(): Promise<void> {
+    const refreshToken = this.storage.refreshToken;
     try {
-      this._currentUser.set(UserAssembler.toEntityFromResource(JSON.parse(serializedUser)));
-    } catch (error) {
-      this.signOut();
+      if (refreshToken) await firstValueFrom(this.iamApi.signOut(refreshToken));
+    } catch {
+      // The local session is cleared anyway.
     }
+    this.storage.clear();
+    this.selectedRole.set(null);
+    this.verificationsSignal.set([]);
   }
 
-  async signIn(command: SignInCommand): Promise<User> {
-    this._processing.set(true);
+  async refreshAccount(): Promise<void> {
+    this.storage.saveAccount(await firstValueFrom(this.iamApi.getMe()));
+  }
+
+  switchRole(role: UserRole): void {
+    if (!this.currentUser()?.hasRole(role)) return;
+    this.selectedRole.set(role);
+    this.storage.activeRole = role;
+  }
+
+  async updateIdentity(fullName: string, phone: string): Promise<void> {
+    await this.run(async () => this.storage.saveAccount(await firstValueFrom(this.iamApi.updateIdentity(fullName, phone))));
+  }
+
+  async addRole(role: UserRole, merchant: MerchantData | null = null): Promise<void> {
+    await this.run(async () => {
+      this.storage.saveAccount(await firstValueFrom(this.iamApi.addRole(role, merchant)));
+      this.switchRole(role);
+    });
+  }
+
+  async updateMerchantProfile(businessName: string, businessType: string): Promise<void> {
+    await this.run(async () => this.storage.saveAccount(await firstValueFrom(this.iamApi.updateMerchantProfile(businessName, businessType))));
+  }
+
+  async loadVerifications(): Promise<void> {
+    this.verificationsSignal.set(await firstValueFrom(this.iamApi.listIdentityVerifications()));
+  }
+
+  /** Sends the identity to the (simulated) KYC provider and reloads the account to read the new status. */
+  async submitVerification(documentFrontS3Key: string | null = null, documentBackS3Key: string | null = null): Promise<void> {
+    await this.run(async () => {
+      await firstValueFrom(this.iamApi.submitIdentityVerification(documentFrontS3Key, documentBackS3Key));
+      await Promise.all([this.loadVerifications(), this.refreshAccount()]);
+    });
+  }
+
+  private async run<T>(action: () => Promise<T>): Promise<T> {
+    this.processingSignal.set(true);
     try {
-      const response = await firstValueFrom(this.iamApi.signIn(command));
-      const users = UserAssembler.toEntitiesFromResources(response);
-      if (users.length !== 1) throw new Error('validation.invalid-credentials');
-      
-      this.startSession(users[0]);
-      this._errors.set([]);
-      return users[0];
-    } catch (error: any) {
-      this._errors.update(errs => [...errs, error]);
-      throw error;
+      return await action();
     } finally {
-      this._processing.set(false);
+      this.processingSignal.set(false);
     }
-  }
-
-  async signUp(command: SignUpCommand): Promise<User> {
-    this._processing.set(true);
-    try {
-      const existing = await firstValueFrom(this.iamApi.findUsersByEmail(command.email));
-      if (existing.length > 0) throw new Error('validation.email-already-registered');
-      
-      const response = await firstValueFrom(this.iamApi.signUp(command));
-      const user = UserAssembler.toEntityFromResource(response);
-      
-      // Note: profile creation will be coordinated by a facade or component.
-      
-      this.startSession(user);
-      this._errors.set([]);
-      return user;
-    } catch (error: any) {
-      this._errors.update(errs => [...errs, error]);
-      throw error;
-    } finally {
-      this._processing.set(false);
-    }
-  }
-
-  async updateCurrentUser(data: { fullName: string; phone: string }): Promise<void> {
-    const user = this._currentUser();
-    if (!user || !user.id) return;
-
-    user.updateContact(data.fullName, new Phone(data.phone));
-    const resource = UserAssembler.toResourceFromEntity(user);
-    
-    await firstValueFrom(this.iamApi.updateUser(user.id, resource));
-    localStorage.setItem(SESSION_USER_KEY, JSON.stringify(resource));
-    this._currentUser.set(UserAssembler.toEntityFromResource(resource)); // trigger reactivity
-  }
-
-  signOut(): void {
-    this._currentUser.set(null);
-    this._errors.set([]);
-    localStorage.removeItem(SESSION_TOKEN_KEY);
-    localStorage.removeItem(SESSION_USER_KEY);
   }
 }

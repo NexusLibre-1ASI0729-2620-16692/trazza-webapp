@@ -1,0 +1,46 @@
+<section class="trazza-page">
+  <header class="trazza-page-header">
+    <div>
+      <h1>{{ 'shipment.new-title' | translate }}</h1>
+      <p>{{ 'shipment.new-subtitle' | translate }}</p>
+    </div>
+  </header>
+  <form class="trazza-panel" [formGroup]="form" (ngSubmit)="submit()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'fields.description' | translate }}</mat-label>
+      <input matInput formControlName="description" maxlength="255">
+    </mat-form-field>
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'fields.weight-kg' | translate }}</mat-label>
+        <input matInput type="number" min="0" step="0.01" formControlName="weightKg">
+        <span matTextSuffix>kg</span>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'fields.volume-m3' | translate }}</mat-label>
+        <input matInput type="number" min="0" step="0.001" formControlName="volumeM3">
+        <span matTextSuffix>m³</span>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'fields.pickup-from' | translate }}</mat-label>
+        <input matInput type="datetime-local" formControlName="pickupFrom" [min]="minDateTime">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'fields.pickup-until' | translate }}</mat-label>
+        <input matInput type="datetime-local" formControlName="pickupUntil" [min]="form.controls.pickupFrom.value || minDateTime">
+      </mat-form-field>
+    </div>
+    <div class="trazza-grid mt-2">
+      <div class="span-6-lg">
+        <app-map-picker [(value)]="pickup" [label]="'fields.pickup' | translate" inputId="shipment-pickup" [savedAddresses]="fleet.savedAddresses()"/>
+      </div>
+      <div class="span-6-lg">
+        <app-map-picker [(value)]="delivery" [label]="'fields.delivery' | translate" inputId="shipment-delivery" [savedAddresses]="fleet.savedAddresses()"/>
+      </div>
+    </div>
+    <div class="form-actions mt-3">
+      <a mat-button routerLink="/matchmaking/shipment-requests">{{ 'actions.cancel' | translate }}</a>
+      <button mat-flat-button type="submit" [disabled]="sending()"><mat-icon>check</mat-icon>{{ 'shipment.publish' | translate }}</button>
+    </div>
+  </form>
+</section>

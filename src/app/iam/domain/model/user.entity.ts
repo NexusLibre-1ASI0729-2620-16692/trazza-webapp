@@ -1,55 +1,59 @@
-import { Email } from './email.value-object';
-import { Phone } from './phone.value-object';
-import { UserRole } from './user-role.value-object';
+import {BaseEntity} from '../../../shared/domain/model/base-entity';
+import {UserRole} from './user-role.value-object';
 
-export interface UserParams {
-  id?: number | null;
-  fullName: string;
-  email: Email;
-  phone: Phone;
-  role: UserRole;
-  createdAt?: string | null;
+export interface MerchantProfile {
+  id: string;
+  businessName: string;
+  ruc: string;
+  businessType: string;
 }
 
-export class User {
-  public static readonly MIN_NAME_LENGTH = 3;
-  private _id: number | null;
-  private _fullName: string;
-  private _email: Email;
-  private _phone: Phone;
-  private _role: UserRole;
-  private _createdAt: string | null;
+/** The signed in account. Personal data arrives masked (DNI) or decrypted only for its owner. */
+export class User implements BaseEntity {
+  id: string;
+  email: string;
+  roles: UserRole[];
+  fullName: string;
+  dniMasked: string;
+  phone: string | null;
+  kycStatus: string | null;
+  carrierProfileId: string | null;
+  merchantProfile: MerchantProfile | null;
+  createdAt: string | null;
 
-  constructor(params: UserParams) {
-    const normalizedName = (params.fullName ?? '').trim();
-    if (normalizedName.length < User.MIN_NAME_LENGTH) throw new Error('validation.full-name-required');
-    if (!(params.email instanceof Email)) throw new Error('validation.email-invalid');
-    if (!(params.phone instanceof Phone)) throw new Error('validation.phone-invalid');
-    if (!(params.role instanceof UserRole)) throw new Error('validation.role-invalid');
-
-    this._id = params.id ?? null;
-    this._fullName = normalizedName;
-    this._email = params.email;
-    this._phone = params.phone;
-    this._role = params.role;
-    this._createdAt = params.createdAt ?? null;
+  constructor(props: {
+    id: string; email: string; roles?: UserRole[]; fullName?: string; dniMasked?: string; phone?: string | null;
+    kycStatus?: string | null; carrierProfileId?: string | null; merchantProfile?: MerchantProfile | null; createdAt?: string | null;
+  }) {
+    this.id = props.id;
+    this.email = props.email;
+    this.roles = [...(props.roles ?? [])];
+    this.fullName = props.fullName ?? '';
+    this.dniMasked = props.dniMasked ?? '';
+    this.phone = props.phone ?? null;
+    this.kycStatus = props.kycStatus ?? null;
+    this.carrierProfileId = props.carrierProfileId ?? null;
+    this.merchantProfile = props.merchantProfile ?? null;
+    this.createdAt = props.createdAt ?? null;
   }
 
-  get id(): number | null { return this._id; }
-  get fullName(): string { return this._fullName; }
-  get firstName(): string { return this._fullName.split(' ')[0]; }
-  get email(): Email { return this._email; }
-  get phone(): Phone { return this._phone; }
-  get role(): UserRole { return this._role; }
-  get createdAt(): string | null { return this._createdAt; }
-  get isCarrier(): boolean { return this._role.isCarrier; }
-  get isMerchant(): boolean { return this._role.isMerchant; }
+  hasRole(role: string | null | undefined): boolean {
+    return this.roles.includes(role as UserRole);
+  }
 
-  updateContact(fullName: string, phone: Phone): void {
-    const normalizedName = (fullName ?? '').trim();
-    if (normalizedName.length < User.MIN_NAME_LENGTH) throw new Error('validation.full-name-required');
-    if (!(phone instanceof Phone)) throw new Error('validation.phone-invalid');
-    this._fullName = normalizedName;
-    this._phone = phone;
+  get isCarrier(): boolean {
+    return this.hasRole(UserRole.CARRIER);
+  }
+
+  get isMerchant(): boolean {
+    return this.hasRole(UserRole.MERCHANT);
+  }
+
+  get hasBothRoles(): boolean {
+    return this.isCarrier && this.isMerchant;
+  }
+
+  get isIdentityValidated(): boolean {
+    return this.kycStatus === 'VALIDATED';
   }
 }

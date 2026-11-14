@@ -4,62 +4,50 @@
       <h1>{{ 'return-route.list-title' | translate }}</h1>
       <p>{{ 'return-route.list-subtitle' | translate }}</p>
     </div>
-    <button mat-flat-button type="button" (click)="navigateToNew()"><mat-icon>add</mat-icon>{{ 'return-route.publish' | translate }}</button>
+    <a mat-flat-button routerLink="/matchmaking/return-routes/new"><mat-icon>add</mat-icon>{{ 'return-route.publish' | translate }}</a>
   </header>
-  <div class="trazza-panel table-panel">
-    @if (store.loading()) {
-      <mat-progress-bar mode="indeterminate"/>
-    }
-    <div class="table-scroll">
-      <table mat-table [dataSource]="dataSource()" [attr.aria-label]="'return-route.list-title' | translate">
+  @if (store.myRoutes().length) {
+    <div class="trazza-panel table-panel">
+      <table mat-table [dataSource]="store.myRoutes()">
         <ng-container matColumnDef="route">
-          <th mat-header-cell *matHeaderCellDef scope="col">{{ 'columns.route' | translate }}</th>
-          <td mat-cell *matCellDef="let row">
-            <div class="trazza-route">{{ row.route.label }}</div>
-            <div class="text-sm trazza-muted">{{ row.route.vehicleLabel }}</div>
+          <th mat-header-cell *matHeaderCellDef>{{ 'columns.route' | translate }}</th>
+          <td mat-cell *matCellDef="let route">
+            <div class="trazza-route">{{ route.label }}</div>
+            <div class="text-sm trazza-muted">{{ route.vehicle.plate }} · {{ route.driverName ?? ('return-route.no-driver' | translate) }}</div>
           </td>
         </ng-container>
-        <ng-container matColumnDef="date">
-          <th mat-header-cell *matHeaderCellDef scope="col">{{ 'columns.date' | translate }}</th>
-          <td mat-cell *matCellDef="let row">
-            <div>{{ row.route.departureDate | trazzaDate: locale.language() }}</div>
-            <div class="text-sm trazza-muted">{{ row.route.timeWindow.label }}</div>
-          </td>
+        <ng-container matColumnDef="departure">
+          <th mat-header-cell *matHeaderCellDef>{{ 'columns.departure' | translate }}</th>
+          <td mat-cell *matCellDef="let route">{{ route.departureAt | trazzaDateTime: locale.language() }}</td>
+        </ng-container>
+        <ng-container matColumnDef="slots">
+          <th mat-header-cell *matHeaderCellDef>{{ 'columns.slots' | translate }}</th>
+          <td mat-cell *matCellDef="let route">{{ route.acceptedShipments }} / {{ route.maxShipments }}</td>
         </ng-container>
         <ng-container matColumnDef="capacity">
-          <th mat-header-cell *matHeaderCellDef scope="col">{{ 'columns.free-capacity' | translate }}</th>
-          <td mat-cell *matCellDef="let row">{{ row.route.availableWeightKg | trazzaNumber }} kg</td>
-        </ng-container>
-        <ng-container matColumnDef="suggestions">
-          <th mat-header-cell *matHeaderCellDef scope="col">{{ 'columns.suggestions' | translate }}</th>
-          <td mat-cell *matCellDef="let row">{{ row.suggestions ?? '—' }}</td>
+          <th mat-header-cell *matHeaderCellDef>{{ 'columns.free-capacity' | translate }}</th>
+          <td mat-cell *matCellDef="let route">{{ route.availableWeightKg | trazzaNumber }} kg · {{ route.availableVolumeM3 | trazzaNumber }} m³</td>
         </ng-container>
         <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef scope="col">{{ 'columns.status' | translate }}</th>
-          <td mat-cell *matCellDef="let row"><app-status-tag [status]="row.route.status.value"/></td>
+          <th mat-header-cell *matHeaderCellDef>{{ 'columns.status' | translate }}</th>
+          <td mat-cell *matCellDef="let route"><app-status-tag [status]="route.status"/></td>
         </ng-container>
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef scope="col">{{ 'columns.actions' | translate }}</th>
-          <td mat-cell *matCellDef="let row">
-            @if (row.route.status.isActive) {
-              <button mat-icon-button type="button" [matTooltip]="'return-route.view-suggestions' | translate" [attr.aria-label]="'return-route.view-suggestions' | translate" (click)="viewSuggestions(row.route)">
-                <mat-icon>inventory_2</mat-icon>
-              </button>
-            }
-            @if (!row.route.status.isClosed) {
-              <button mat-icon-button type="button" class="danger-icon" [matTooltip]="'return-route.close' | translate" [attr.aria-label]="'return-route.close' | translate" (click)="confirmClose(row.route)">
-                <mat-icon>cancel</mat-icon>
-              </button>
+          <th mat-header-cell *matHeaderCellDef>{{ 'columns.actions' | translate }}</th>
+          <td mat-cell *matCellDef="let route">
+            <a mat-icon-button [routerLink]="['/matchmaking/return-routes', route.id]" [matTooltip]="'return-route.view-suggestions' | translate"
+               [attr.aria-label]="'return-route.view-suggestions' | translate"><mat-icon>inventory_2</mat-icon></a>
+            @if (route.canBeCancelled) {
+              <button mat-icon-button type="button" [matTooltip]="'return-route.cancel' | translate" [attr.aria-label]="'return-route.cancel' | translate"
+                      (click)="cancel(route)"><mat-icon>cancel</mat-icon></button>
             }
           </td>
         </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell empty-cell" [attr.colspan]="displayedColumns.length">{{ 'return-route.empty' | translate }}</td>
-        </tr>
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"></tr>
       </table>
     </div>
-    <mat-paginator [pageSizeOptions]="[8, 16, 32]" showFirstLastButtons [attr.aria-label]="'columns.pagination' | translate"/>
-  </div>
+  } @else {
+    <app-empty-state icon="alt_route" titleKey="return-route.empty"/>
+  }
 </section>

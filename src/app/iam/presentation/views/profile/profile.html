@@ -1,0 +1,96 @@
+@if (user(); as user) {
+  <section class="trazza-page">
+    <header class="trazza-page-header">
+      <div>
+        <h1>{{ 'profile.title' | translate }}</h1>
+        <p>{{ 'profile.subtitle' | translate }}</p>
+      </div>
+    </header>
+    <div class="trazza-grid">
+      <article class="trazza-panel span-6-lg">
+        <h2 class="text-lg mt-0">{{ 'profile.account' | translate }}</h2>
+        <p class="m-0"><span class="semibold">{{ 'fields.email' | translate }}:</span> {{ user.email }}</p>
+        <p><span class="semibold">{{ 'fields.dni' | translate }}:</span> {{ user.dniMasked }}</p>
+        <div class="row wrap">
+          <span class="semibold">{{ 'profile.roles' | translate }}:</span>
+          @for (role of user.roles; track role) {
+            <app-status-tag tone="info" [labelKey]="'roles.' + role.toLowerCase()"/>
+          }
+        </div>
+        <h3 class="mt-3 mb-2">{{ 'profile.identity' | translate }}</h3>
+        <div class="row wrap mb-2">
+          <app-status-tag [status]="user.kycStatus"/>
+          @if (!user.isIdentityValidated) {
+            <button mat-stroked-button type="button" [disabled]="store.processing()" (click)="verify()">{{ 'profile.verify-identity' | translate }}</button>
+          }
+        </div>
+        <p class="text-sm trazza-muted mt-0">{{ 'profile.verify-hint' | translate }}</p>
+        @for (verification of store.verifications(); track verification.id) {
+          <div class="text-sm divider-row row wrap">
+            <span>{{ verification.submittedAt | trazzaDateTime: locale.language() }} · {{ verification.provider }}</span>
+            <app-status-tag [status]="verification.status"/>
+            @if (verification.rejectionReason) {
+              <span class="trazza-muted">{{ verification.rejectionReason }}</span>
+            }
+          </div>
+        }
+      </article>
+
+      <form class="trazza-panel span-6-lg" [formGroup]="identityForm" (ngSubmit)="saveIdentity()">
+        <h2 class="text-lg mt-0">{{ 'profile.contact' | translate }}</h2>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'fields.full-name' | translate }}</mat-label>
+          <input matInput formControlName="fullName">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'fields.phone' | translate }}</mat-label>
+          <input matInput formControlName="phone" inputmode="tel">
+        </mat-form-field>
+        <button mat-flat-button type="submit" [disabled]="store.processing()">{{ 'actions.save' | translate }}</button>
+      </form>
+
+      @if (user.isMerchant) {
+        <form class="trazza-panel span-6-lg" [formGroup]="businessForm" (ngSubmit)="saveBusiness()">
+          <h2 class="text-lg mt-0">{{ 'profile.business' | translate }}</h2>
+          <p class="mt-0"><span class="semibold">{{ 'fields.ruc' | translate }}:</span> {{ user.merchantProfile?.ruc }}</p>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'fields.business-name' | translate }}</mat-label>
+            <input matInput formControlName="businessName">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'fields.business-type' | translate }}</mat-label>
+            <input matInput formControlName="businessType">
+          </mat-form-field>
+          <button mat-flat-button type="submit">{{ 'actions.save' | translate }}</button>
+        </form>
+      }
+
+      @if (!user.isCarrier) {
+        <article class="trazza-panel span-6-lg">
+          <h2 class="text-lg mt-0">{{ 'profile.become-carrier' | translate }}</h2>
+          <p class="trazza-muted">{{ 'profile.become-carrier-hint' | translate }}</p>
+          <button mat-flat-button type="button" (click)="addCarrierRole()"><mat-icon>local_shipping</mat-icon>{{ 'profile.add-carrier-role' | translate }}</button>
+        </article>
+      }
+
+      @if (!user.isMerchant) {
+        <form class="trazza-panel span-6-lg" [formGroup]="newMerchantForm" (ngSubmit)="addMerchantRole()">
+          <h2 class="text-lg mt-0">{{ 'profile.become-merchant' | translate }}</h2>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'fields.business-name' | translate }}</mat-label>
+            <input matInput formControlName="businessName">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'fields.ruc' | translate }}</mat-label>
+            <input matInput formControlName="ruc" maxlength="11" inputmode="numeric">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'fields.business-type' | translate }}</mat-label>
+            <input matInput formControlName="businessType">
+          </mat-form-field>
+          <button mat-flat-button type="submit"><mat-icon>storefront</mat-icon>{{ 'profile.add-merchant-role' | translate }}</button>
+        </form>
+      }
+    </div>
+  </section>
+}

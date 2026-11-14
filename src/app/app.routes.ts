@@ -1,5 +1,5 @@
 import {Routes} from '@angular/router';
-import {iamGuard} from './iam/infrastructure/iam.guard';
+import {authenticationGuard} from './iam/infrastructure/iam.guard';
 
 const dashboard = () => import('./shared/presentation/views/dashboard/dashboard').then(m => m.Dashboard);
 const pageNotFound = () => import('./shared/presentation/views/page-not-found/page-not-found').then(m => m.PageNotFound);
@@ -10,12 +10,12 @@ const billingRoutes = () => import('./billing/presentation/billing.routes').then
 const reputationRoutes = () => import('./reputation/presentation/reputation.routes').then(m => m.reputationRoutes);
 
 export const routes: Routes = [
-  { path: 'dashboard',   loadComponent: dashboard,         title: 'option.dashboard', canActivate: [iamGuard] },
+  { path: 'dashboard',   loadComponent: dashboard,         title: 'option.dashboard', canActivate: [authenticationGuard] },
   { path: 'iam',         loadChildren:  iamRoutes },
-  { path: 'matchmaking', loadChildren:  matchmakingRoutes },
-  { path: 'execution',   loadChildren:  executionRoutes },
-  { path: 'billing',     loadChildren:  billingRoutes },
-  { path: 'reputation',  loadChildren:  reputationRoutes },
+  { path: 'matchmaking', loadChildren:  matchmakingRoutes, canActivateChild: [authenticationGuard] },
+  { path: 'execution',   loadChildren:  executionRoutes, canActivateChild: [authenticationGuard] },
+  { path: 'billing',     loadChildren:  billingRoutes, canActivateChild: [authenticationGuard] },
+  { path: 'reputation',  loadChildren:  reputationRoutes, canActivateChild: [authenticationGuard] },
   { path: '',            redirectTo:    '/dashboard', pathMatch: 'full' },
   { path: '**',          loadComponent: pageNotFound,      title: 'page-not-found.title' }
 ];
