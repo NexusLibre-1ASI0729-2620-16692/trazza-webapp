@@ -9,7 +9,6 @@ import {TopBar} from '../top-bar/top-bar';
 import {LanguageSwitcher} from '../language-switcher/language-switcher';
 import {FooterContent} from '../footer-content/footer-content';
 import {IamStore} from '../../../../iam/application/iam.store';
-import {ProfileStore} from '../../../../iam/application/profile.store';
 import {MatchmakingStore} from '../../../../matchmaking/application/matchmaking.store';
 import {ExecutionStore} from '../../../../execution/application/execution.store';
 import {ReputationStore} from '../../../../reputation/application/reputation.store';
@@ -25,7 +24,6 @@ export class Layout {
   static readonly DESKTOP_QUERY = '(min-width: 1024px)';
 
   protected readonly iamStore = inject(IamStore);
-  private readonly profileStore = inject(ProfileStore);
   private readonly matchmakingStore = inject(MatchmakingStore);
   private readonly executionStore = inject(ExecutionStore);
   private readonly reputationStore = inject(ReputationStore);
@@ -53,7 +51,6 @@ export class Layout {
 
   private loadContexts(): void {
     const role = this.iamStore.isCarrier() ? 'CARRIER' : 'MERCHANT';
-    this.profileStore.loadProfiles();
     this.matchmakingStore.loadAll(role).catch(() => undefined);
     this.executionStore.loadTrips().catch(() => undefined);
     this.reputationStore.loadLoyalty().catch(() => undefined);
