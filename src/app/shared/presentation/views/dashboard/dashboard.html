@@ -1,93 +1,50 @@
 <section class="trazza-page">
   <header class="trazza-page-header">
     <div>
-      <h1>{{ greetingKey() | translate: { name: firstName() } }}</h1>
-      <p>{{ (isCarrier() ? 'dashboard.carrier-subtitle' : 'dashboard.merchant-subtitle') | translate }}</p>
+      <h1>{{ 'dashboard.greeting' | translate: { name: firstName() } }}</h1>
+      <p>{{ (iamStore.isCarrier() ? 'dashboard.subtitle-carrier' : 'dashboard.subtitle-merchant') | translate }}</p>
     </div>
-    @if (isCarrier()) {
-      <button mat-flat-button type="button" (click)="navigate(['/matchmaking/return-routes/new'])">
-        <mat-icon>add</mat-icon>{{ 'return-route.publish' | translate }}
-      </button>
+    @if (iamStore.isCarrier()) {
+      <a mat-flat-button routerLink="/matchmaking/return-routes/new"><mat-icon>add</mat-icon>{{ 'return-route.publish' | translate }}</a>
     } @else {
-      <button mat-flat-button type="button" (click)="navigate(['/matchmaking/freight-requests/new'])">
-        <mat-icon>add</mat-icon>{{ 'freight-request.new' | translate }}
-      </button>
+      <a mat-flat-button routerLink="/matchmaking/shipment-requests/new"><mat-icon>add</mat-icon>{{ 'shipment.publish' | translate }}</a>
     }
   </header>
 
+  @if (user() && !user()!.isIdentityValidated) {
+    <div class="trazza-message mb-3" role="alert">
+      {{ 'dashboard.kyc-pending' | translate }}
+      <a routerLink="/iam/profile" class="semibold">{{ 'option.profile' | translate }}</a>
+    </div>
+  }
+  @if (executionStore.openAlerts()) {
+    <div class="trazza-message tag-danger mb-3" role="alert">{{ 'dashboard.alerts' | translate: { count: executionStore.openAlerts() } }}</div>
+  }
+
   <div class="trazza-grid">
-    @for (kpi of kpis(); track kpi.label) {
-      <article class="trazza-panel span-6-sm span-3-lg">
-        <div class="trazza-overline mb-2">{{ kpi.label | translate }}</div>
-        <div class="trazza-kpi">{{ kpi.value }}</div>
-        <div class="text-sm trazza-muted mt-1">{{ kpi.hint ? (kpi.hint | translate: kpi.hintParams) : '—' }}</div>
-      </article>
+    @for (card of cards(); track card.label) {
+      <button type="button" class="trazza-panel kpi-card span-6-sm span-3-lg" (click)="open(card.link)">
+        <mat-icon class="kpi-icon" aria-hidden="true">{{ card.icon }}</mat-icon>
+        <span>
+          <span class="trazza-kpi block">{{ card.value }}</span>
+          <span class="text-sm trazza-muted">{{ card.label | translate }}</span>
+        </span>
+      </button>
     }
   </div>
 
-  <div class="trazza-grid mt-3">
-    <article class="trazza-panel span-6-lg">
-      @if (activeShipment(); as shipment) {
-        <div class="trazza-overline mb-2">{{ (isCarrier() ? 'dashboard.active-trip' : 'dashboard.shipment-in-transit') | translate }}</div>
-        <div class="trazza-route text-lg">{{ shipment.label }}</div>
-        <div class="text-sm mb-2">
-          @if (isCarrier()) {
-            {{ shipment.merchantName }}
-          } @else {
-            {{ 'roles.carrier' | translate }}: {{ shipment.carrierName }}
-          }
-        </div>
-        <app-status-tag [status]="shipment.status.value"/>
-        <div class="mt-3">
-          @if (isCarrier()) {
-            <button mat-stroked-button type="button" (click)="navigate(['/execution/active-trip'])">{{ 'dashboard.view-trip' | translate }}</button>
-          } @else {
-            <button mat-stroked-button type="button" (click)="navigate(['/execution/shipment-tracking'], { shipmentId: shipment.id })">{{ 'dashboard.track-shipment' | translate }}</button>
-          }
-        </div>
-      } @else if (isCarrier() && nextRoute()) {
-        <div class="trazza-overline mb-2">{{ 'dashboard.next-return-trip' | translate }}</div>
-        <div class="trazza-route text-lg">{{ nextRoute()!.label }}</div>
-        <div class="text-sm">
-          {{ nextRoute()!.departureDate | trazzaDate: locale.language() }} · {{ nextRoute()!.timeWindow.label }} ·
-          {{ nextRoute()!.availableWeightKg | trazzaNumber }} kg {{ 'load-suggestions.free' | translate }}
-        </div>
-      } @else {
-        <div class="trazza-overline mb-2">{{ 'dashboard.getting-started' | translate }}</div>
-        <p class="m-0 trazza-muted">{{ (isCarrier() ? 'dashboard.carrier-empty' : 'dashboard.merchant-empty') | translate }}</p>
-      }
-    </article>
-
-    <article class="trazza-panel span-6-lg">
-      @if (isCarrier()) {
-        <div class="trazza-overline mb-2">{{ 'dashboard.new-suggestions' | translate }}</div>
-        @for (item of topSuggestions(); track item.routeId + '-' + item.request.id) {
-          <button type="button" class="suggestion-row divider-row" (click)="navigate(['/matchmaking/load-suggestions', item.routeId, 'loads', item.request.id])">
-            <span>
-              <span class="semibold block">{{ profileStore.displayNameOf(item.request.merchantId) }}</span>
-              <span class="text-sm trazza-muted block">
-                {{ item.request.label }} · {{ item.request.cargo.weightKg | trazzaNumber }} kg · {{ 'load.detour' | translate }} {{ item.detour.label }}
-              </span>
-            </span>
-            <span class="bold">{{ item.request.offeredRate?.formatted ?? '—' }}</span>
-          </button>
-        } @empty {
-          <p class="m-0 trazza-muted">{{ 'load-suggestions.empty-title' | translate }}</p>
-        }
-      } @else {
-        <div class="trazza-overline mb-2">{{ 'dashboard.recent-requests' | translate }}</div>
-        @for (request of recentRequests(); track request.id) {
-          <div class="row-between divider-row">
-            <div>
-              <div class="semibold">{{ request.code }} · {{ request.label }}</div>
-              <div class="text-sm trazza-muted">{{ request.pickupDate | trazzaDate: locale.language() }} · {{ request.cargo.weightKg | trazzaNumber }} kg</div>
-            </div>
-            <app-status-tag [status]="request.status.value"/>
-          </div>
-        } @empty {
-          <p class="m-0 trazza-muted">{{ 'freight-request.empty' | translate }}</p>
-        }
-      }
-    </article>
-  </div>
+  <article class="trazza-panel mt-3">
+    <h2 class="text-lg mt-0">{{ 'dashboard.active-trips' | translate }}</h2>
+    @for (trip of executionStore.activeTrips(); track trip.id) {
+      <button type="button" class="trip-row" (click)="open('/execution/trips/' + trip.id)">
+        <span>
+          <span class="trazza-route block">{{ trip.label }}</span>
+          <span class="text-sm trazza-muted">{{ trip.departureAt | trazzaDateTime: locale.language() }} · {{ trip.counterpart.name }}</span>
+        </span>
+        <app-status-tag [status]="trip.status"/>
+      </button>
+    } @empty {
+      <p class="trazza-muted m-0">{{ 'trip.empty' | translate }}</p>
+    }
+  </article>
 </section>

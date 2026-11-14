@@ -1,9 +1,36 @@
-.suggestion-row {
+.kpi-card {
   display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  border: 1px solid var(--trazza-line);
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.kpi-card:hover,
+.kpi-card:focus-visible {
+  border-color: var(--trazza-accent);
+  outline: none;
+}
+
+.kpi-icon {
+  font-size: 2rem;
+  width: 2rem;
+  height: 2rem;
+  color: var(--trazza-accent);
+}
+
+.trip-row {
+  display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: 0.75rem;
   width: 100%;
+  padding: 0.6rem 0;
   background: transparent;
   border: none;
   border-bottom: 1px solid var(--trazza-line);
@@ -13,12 +40,12 @@
   cursor: pointer;
 }
 
-.suggestion-row:hover,
-.suggestion-row:focus-visible {
-  background: #f0f3ff;
-  outline: none;
+.trip-row:last-child {
+  border-bottom: none;
 }
 
-.block {
-  display: block;
+.trip-row:hover,
+.trip-row:focus-visible {
+  background: #f0f3ff;
+  outline: none;
 }
