@@ -52,9 +52,10 @@ export class Layout {
   }
 
   private loadContexts(): void {
+    const role = this.iamStore.isCarrier() ? 'CARRIER' : 'MERCHANT';
     this.profileStore.loadProfiles();
-    this.matchmakingStore.loadAll();
-    this.executionStore.loadShipments();
-    this.reputationStore.loadRatings();
+    this.matchmakingStore.loadAll(role).catch(() => undefined);
+    this.executionStore.loadTrips().catch(() => undefined);
+    this.reputationStore.loadLoyalty().catch(() => undefined);
   }
 }
