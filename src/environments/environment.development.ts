@@ -1,6 +1,7 @@
 export const environment = {
   production: false,
   platformProviderApiBaseUrl: 'http://localhost:3000/api/v1',
+  authenticationEndpointPath: '/authentication',
   platformProviderUsersEndpointPath: '/users',
   platformProviderCarrierProfilesEndpointPath: '/carrier-profiles',
   platformProviderMerchantProfilesEndpointPath: '/merchant-profiles',
