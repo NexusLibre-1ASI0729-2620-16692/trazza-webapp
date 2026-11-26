@@ -43,4 +43,37 @@ describe('Trip', () => {
     expect(trip({ myRole: 'MERCHANT' }).counterpart.name).toBe('Luis');
     expect(trip().label).toBe('Lima → San Borja');
   });
+
+  it('can be cancelled and assigned a driver only before the pick-up', () => {
+    expect(trip().canCancel).toBeTrue();
+    expect(trip().canAssignDriver).toBeTrue();
+    expect(trip({ status: TripStatus.PICKED_UP }).canCancel).toBeFalse();
+    expect(trip({ status: TripStatus.PICKED_UP }).canAssignDriver).toBeFalse();
+    expect(trip({ myRole: 'MERCHANT' }).canAssignDriver).toBeFalse();
+  });
+
+  it('is active until it is confirmed or cancelled', () => {
+    expect(trip({ status: TripStatus.DELIVERED }).isActive).toBeTrue();
+    expect(trip({ status: TripStatus.CONFIRMED }).isActive).toBeFalse();
+    expect(trip({ status: TripStatus.CONFIRMED }).isClosed).toBeTrue();
+    expect(trip({ status: TripStatus.CANCELLED }).isClosed).toBeTrue();
+    expect(trip().isClosed).toBeFalse();
+  });
+
+  it('has a settlement once it has left the scheduled state, unless it was cancelled', () => {
+    expect(trip().hasSettlement).toBeFalse();
+    expect(trip({ status: TripStatus.DELIVERED }).hasSettlement).toBeTrue();
+    expect(trip({ status: TripStatus.CANCELLED }).hasSettlement).toBeFalse();
+  });
+
+  it('falls back to no alerts and empty parties when the platform omits them', () => {
+    const sparse = trip({
+      openAlerts: undefined as unknown as number,
+      carrier: undefined as unknown as Trip['carrier'],
+      merchant: undefined as unknown as Trip['merchant']
+    });
+    expect(sparse.openAlerts).toBe(0);
+    expect(sparse.carrier).toEqual({ name: '', phone: null });
+    expect(sparse.merchant).toEqual({ name: '', phone: null });
+  });
 });
