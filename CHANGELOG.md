@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Unit tests for the `execution` bounded context: domain entities and commands, `ExecutionStore`, `ExecutionApi`, routes, `TripList`, `IotDeviceList` and `IncidentPanel`.
+- Unit tests for `FeedbackService` and the collection helpers of the shared kernel.
+- Documentation of the `execution` bounded context, its sequence diagram and ADR-014 on visibility-aware polling.
+
 ## [1.2.0] - 2026-11-14
 
 ### Changed

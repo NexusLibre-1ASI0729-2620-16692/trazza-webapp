@@ -19,6 +19,7 @@ This document records the key architectural decisions made for the Trazza web ap
 - [ADR-011: Route Matching as a Domain Service with District-Based Distance Estimation](#adr-011-route-matching-as-a-domain-service-with-district-based-distance-estimation)
 - [ADR-012: External Services Behind Infrastructure Adapters and a Mock API](#adr-012-external-services-behind-infrastructure-adapters-and-a-mock-api)
 - [ADR-013: OnPush Change Detection and Signal Inputs/Outputs](#adr-013-onpush-change-detection-and-signal-inputsoutputs)
+- [ADR-014: Trip Tracking with Visibility-Aware Polling instead of WebSockets](#adr-014-trip-tracking-with-visibility-aware-polling-instead-of-websockets)
 
 ---
 
@@ -281,3 +282,25 @@ Views read derived state from several stores. Default change detection would che
 ### Consequences
 - **Positive:** predictable rendering driven by signals and better performance.
 - **Negative:** plain mutable fields do not refresh the view; state must live in signals.
+
+---
+
+## ADR-014: Trip Tracking with Visibility-Aware Polling instead of WebSockets
+
+### Status
+Accepted
+
+### Context
+The trip detail must show the merchant the position of the truck, the deviation alerts and the status changes a few seconds after they happen. The Trazza Platform API is a REST API and does not expose a push channel, so the web application has to ask for the data.
+
+### Decision
+- `TripDetail` and the proposal chat call `startPolling(action, intervalMs)` from `shared/presentation/services/polling.ts`.
+- The action runs on an interval (15 seconds for the trip, `TripDetail.POLL_INTERVAL_MS`) and only when `document.visibilityState === 'visible'`.
+- The trip detail reloads only while the trip is active (`Trip.isActive`); once it is confirmed or cancelled there is nothing left to follow.
+- The interval is cleared through `DestroyRef.onDestroy` when the component is destroyed.
+
+### Consequences
+- **Positive:** no extra infrastructure on the platform, works behind any proxy and is simple to test.
+- **Positive:** hidden tabs do not generate traffic.
+- **Negative:** information can be up to 15 seconds old; the carrier's own view is updated immediately when it records a point.
+- **Negative:** every open trip detail makes four requests per cycle; if the number of simultaneous users grows, a push channel (server-sent events or WebSockets) should replace the polling.
