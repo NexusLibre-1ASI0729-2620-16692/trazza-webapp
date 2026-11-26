@@ -1,0 +1,45 @@
+@startuml
+title Execution: carrier shares location and merchant follows the trip
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+
+actor Carrier
+actor Merchant
+participant "TripDetail\n(carrier)" as CarrierView
+participant "TripDetail\n(merchant)" as MerchantView
+participant ExecutionStore
+participant ExecutionApi
+participant "Trazza Platform API" as Platform
+
+== Carrier shares the position ==
+Carrier -> CarrierView : toggleSharing()
+CarrierView -> CarrierView : navigator.geolocation.watchPosition()
+loop each new position
+  CarrierView -> ExecutionStore : recordTrackingPoint(tripId, point)
+  ExecutionStore -> ExecutionApi : recordTrackingPoint(tripId, point)
+  ExecutionApi -> Platform : POST /trips/{id}/tracking-points\n{latitude, longitude, speedKmh, source: PHONE}
+  Platform --> ExecutionApi : {point, alert | null, tripStatus}
+  ExecutionApi --> ExecutionStore : TrackingResult
+  ExecutionStore --> CarrierView : TrackingResult
+  CarrierView -> CarrierView : add point to the track
+  opt alert is not null
+    CarrierView -> CarrierView : add DeviationAlert to the open alerts
+  end
+end
+
+== Merchant follows the trip ==
+loop every 15 s while the trip is active and the tab is visible
+  MerchantView -> ExecutionStore : getTrip(id), listTrackingPoints(id),\nlistAlerts(id), getHistory(id)
+  ExecutionStore -> ExecutionApi : the four reads
+  ExecutionApi -> Platform : GET /trips/{id} and its sub-resources
+  Platform --> ExecutionApi : trip, tracking points, alerts, history
+  ExecutionApi --> ExecutionStore : Trip, TrackingPoint[], DeviationAlert[], TripStatusChange[]
+  ExecutionStore --> MerchantView : refreshed trip
+end
+
+Merchant -> MerchantView : acknowledge(alert)
+MerchantView -> ExecutionStore : acknowledgeAlert(tripId, alertId)
+ExecutionStore -> ExecutionApi : acknowledgeAlert(tripId, alertId)
+ExecutionApi -> Platform : POST /trips/{id}/deviation-alerts/{alertId}/acknowledge
+Platform --> MerchantView : 200 OK, the view reloads the trip
+@enduml
